@@ -6,14 +6,8 @@ let result = {};
 
 module.exports.ResInsert = async function(){
     let value = makejson.makeReqData('H010');
-    let options = {
-        uri: process.env.ANOMAL_ADDRESS,
-        method: 'POST',
-        body: value,
-        json: true
-    };
 
-    httpcall.httpReq(options, async function(err, res) {
+    httpcall.Call('post', process.env.ANOMAL_ADDRESS, value, async function (err, res) {
         result = await H010.parseAndInsert(res);
 
         if(result instanceof Error){

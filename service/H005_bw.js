@@ -33,7 +33,7 @@ module.exports.parseAndInsert = async function(req, tableName){
             winston.info("********************************************************************************");
             winston.info("*******************query start *************************");
             for(const tableInfo of tableInfos){
-                winston.debug(JSON.stringify(tableInfo));
+                //winston.debug(JSON.stringify(tableInfo));
                 if(!Array.isArray(tableInfo.tableData)){
                     let rslt = await db[tableInfo.tableName.toUpperCase()].create(tableInfo.tableData,{ transaction: t });
                     //rlst =  new Error("임의 발생");

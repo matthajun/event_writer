@@ -7,7 +7,7 @@ const mt = require('moment-timezone');
 const date = mt().tz('Asia/Seoul');
 
 const { combine, timestamp, label, printf  } = winston.format;
-const logDir = process.env.NODE_ENV !== 'production' ? `${appRoot}\\logs\\`: '/data/ds/logs/';
+const logDir = process.env.NODE_ENV !== 'production' ? `${appRoot}${path.sep}logs${path.sep}`: '/data/ds/logs/';
 
 const getLabel = function (callingModule) {
     const parts = callingModule.filename.split(path.sep);

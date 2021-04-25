@@ -8,9 +8,10 @@ let tablePrefix = process.env.ANOMALY_TABLE_PREFIX;
 let masterTableName = "";
 
 module.exports.parseAndInsert = async function(req){
-    masterTableName =  tablePrefix + req.body.header.message_id;
+    console.log(5555555,req);
+    masterTableName =  tablePrefix + req.header.message_id;
     const time = setDateTime.setDateTime();
-    const reqBodyData = {...req.body.body, ...req.body.body.result, ...req.body.header, date_time: time};
+    const reqBodyData = {...req.body, ...req.body.result, ...req.header, date_time: time};
     const tableInfos = [];
 
     tableInfos.push({tableName:masterTableName, tableData:_.cloneDeep(reqBodyData)});

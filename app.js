@@ -1,15 +1,15 @@
+const dotenv = require('dotenv');
+dotenv.config();
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const morgan = require('morgan');
 const session = require('express-session');
-const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const makejson = require('./utils/makejson');
 const initialize = require('./utils/Initial_table');
 const winston = require('./config/winston')(module);
-dotenv.config();
 const v1 = require('./routes/v1');
 const api = require('./routes/api');
 const authRouter = require('./routes/auth');
@@ -30,10 +30,10 @@ const HighRank = require('./service/HighRank');
 const stix_anomaly = require('./STIX_service/stixInsert_anomaly');
 const stix_event = require('./STIX_service/stixInsert_event');
 const stix_state = require('./STIX_service/stixInsert_state');
-const stix_log = require('./STIX_service/stixInsert_logevent');
 const stix_traffic = require('./STIX_service/stixInsert_traffic');
 
 const bwinsert = require('./STIX_service/bwInsert_schedule');
+const time = require('./utils/setDateTime');
 
 //app.set('view engine', 'html');
 
@@ -102,16 +102,15 @@ app.listen(app.get('port'), () => {
 
 H005.scheduleInsert();
 H005_connect.scheduleInsert();
-//H008.scheduleInsert(); // 5분간격으로 파일 요청
+H008.scheduleInsert(); // 5분간격으로 파일 요청(테스트용) 본래는 화면존재 (0423)
 
 HighRank.searchAndtransm();
 
-//initialize.Initialize(); //H004,H010 테이블 초기화
+initialize.Initialize(); //H004,H010 테이블 초기화, 테스트용 2분 스케쥴(0423)
 
 stix_anomaly.searchAndInsert();
 stix_event.searchAndInsert();
 stix_state.searchAndInsert();
-stix_log.searchAndInsert();
 stix_traffic.searchAndInsert();
 
-bwinsert.searchAndInsert();
+//bwinsert.searchAndInsert();   //보안정책 테이블로 이동하는 스케쥴, 테스트를 위해 잠시 막아둠(0423)

@@ -34,19 +34,18 @@ router.post('/v1', async (req, res, next) => {
     try {
         winston.debug("post id " + req.body.header.message_id);
         const codeId = req.body.header.message_id;
-/*
-        if (codeId[0] !== 'L') {
-            //confirm_code check, 이상행위 데이터에 대해서만 실행
-            const reqData = req.body;
-            const reqConfirmCode = reqData.header.confirm_code;
-            const localMakeConfirmCode = await confirmutils.makeConfirmCode(JSON.stringify(reqData.body));
 
-            if (reqConfirmCode !== localMakeConfirmCode) {
-                winston.error(`${localMakeConfirmCode} ,  ${reqConfirmCode}`);
-                const errCode = "93";
-                throw Error(`{"res_cd":"${errCode}"}`);
-            }
-        }*/
+        //confirm_code check 실행
+        const reqData = req.body;
+        const reqConfirmCode = reqData.header.confirm_code;
+        const localMakeConfirmCode = await confirmutils.makeConfirmCode(reqData.body);
+
+        if (reqConfirmCode !== localMakeConfirmCode) {
+            winston.error(`우리쪽 값 ${localMakeConfirmCode} ,  받은 값 ${reqConfirmCode}`);
+            const errCode = "93";
+            throw Error(`{"res_cd":"${errCode}"}`);
+        }
+
 
         let result =  {};
         let ch_result = {};
@@ -116,14 +115,14 @@ router.post('/v1', async (req, res, next) => {
     }
 });
 
-router.post('/v1/:id', uploader.single('notme'), async (req, res, next)=> {
+router.post('/v1/:id', uploader.single('file'), async (req, res, next)=> {
    try {
         winston.debug("post id " + req.params.id);
         const codeId = req.params.id;
 
         let result = {};
         switch (codeId) {
-            case "json_data" :
+            case "json" :
                 //confirm_code 확인
                 const reqData = req.body;
                 const reqConfirmCode = reqData.header.confirm_code;
@@ -139,7 +138,7 @@ router.post('/v1/:id', uploader.single('notme'), async (req, res, next)=> {
                 result = await H001.parseAndInsert(req);
                 break;
 
-            case "pcap_file" :
+            case "pcap" :
                 console.log(req);
                 winston.info('******************** pcap 파일을 수신하여 저장합니다. file is downloading.********************');
                 console.log(req.file);

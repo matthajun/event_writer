@@ -4,34 +4,28 @@ const H008 = require('../service/H008');
 const makejson = require('../utils/makejson');
 const db = require('../models');
 const sequelize = require('sequelize');
+const setDateTime = require('../utils/setDateTime');
 
 let result = {};
 
 exports.scheduleInsert = () => {
     schedule.scheduleJob('*/5 * * * *', function() {
-        db.KDN_INFORM.findAll()
-            .then(results => {
-                for (result of results) {
-                    let value = makejson.makeReqData_H008('H008', result.dataValues);
-                    let options = {
-                        uri: process.env.ANOMAL_ADDRESS,
-                        method: 'POST',
-                        body: value,
-                        json: true
-                    };
+        const time = setDateTime.setDateTime();
+        const before_time = setDateTime.setDateTime_ago_5();
+        const long_before_time = setDateTime.setDateTime_ago_10();
 
-                    httpcall.httpReq(options, async function (err, res) {
-                        result = await H008.parseAndInsert(res);
+        let body = {"unit_id":'EWP_01_UN_02', 'make_id': 'EWP_01_UN_02_ABB',
+                    'start_time': long_before_time, 'end_time': before_time };
 
-                        if (result instanceof Error) {
-                            throw new Error(result);
-                        }
-                    });
+        let value = makejson.makeReqData_H008('H008',body);
+        //console.log(11111111,value);
+        httpcall.Call('post', process.env.ANOMAL_ADDRESS, value, async function (err, res) {
+            //console.log(111111,res);
+            result = await H008.parseAndInsert(res);
 
-                }
-            })
-            .catch(err => {
-                console.error(err);
-            });
+            if (result instanceof Error) {
+                throw new Error(result);
+            }
+        });
     })
 };

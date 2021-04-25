@@ -7,8 +7,15 @@ const fs = require('fs');
 const str = '"body":{"result":{"res_cd":"93","res_msg":"정합성 코드 불일치"}}';
 console.log(CRC32.str(str).toString(16));*/
 
+function k(aa) {
+    let a = CRC32.str('"body":' + JSON.stringify(aa));
+    let b = a>>>0;
+
+    return b.toString(16);
+}
+
 /*
-const path = 'C:\\Users\\stella\\Desktop\\test0416\\H004.json';
+const path = 'C:\\Users\\user\\data\\107.json';
 const data = [];
 const rs  = fs.createReadStream(path);
 rs.on('data',(chunk) =>{
@@ -20,11 +27,26 @@ rs.on('end' , ()=>{
     console.log(js_data.header);
     console.log(confirm_code);
     console.log(JSON.stringify(js_data.body));
+
+    //console.log(str('"body":'+JSON.stringify(js_data.body)));
+
     console.log(CRC32.str('"body":'+ JSON.stringify(js_data.body)).toString(16));
-    console.log(confirm_code == CRC32.str('"body":'+ JSON.stringify(js_data.body)).toString(16));
+    let a = CRC32.str('"body":'+ JSON.stringify(js_data.body));
+    console.log(a>>>0);
+    let b = a>>>0;
+    console.log(b.toString(16));
+    console.log(k(js_data.body));
+
+    console.log(confirm_code == k(js_data.body));
+
+    //console.log(confirm_code == CRC32.str('"body":'+ JSON.stringify(js_data.body)).toString(16));
     //console.log(makeConfirmCode(JSON.stringify(js_data.body)));
 
-});*/
+});
+*/
 module.exports.makeConfirmCode  = function (strData){
-    return CRC32.str('"body":' + strData).toString(16);
+    let a = CRC32.str('"body":' + JSON.stringify(strData));
+    let b = a>>>0;
+
+    return b.toString(16);
 };

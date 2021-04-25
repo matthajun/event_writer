@@ -9,11 +9,12 @@ let tableName = "";
 let masterTableName = "";
 
 module.exports.parseAndInsert = async function(req){
-    masterTableName =  tablePrefix + req.body.header.message_id;
+    console.log(888888,req);
+    masterTableName =  tablePrefix + req.header.message_id;
     const time = setDateTime.setDateTime();
-    const reqBodyData = {...req.body.body.result, ...req.body.header, date_time: time};
+    const reqBodyData = {...req.body.result, ...req.header, date_time: time};
     const tableInfos = [];
-    const reqBodyData_Body = {...req.body.body};
+    const reqBodyData_Body = {...req.body};
 
     tableInfos.push({tableName:masterTableName, tableData:_.cloneDeep(reqBodyData)});
 
@@ -22,7 +23,7 @@ module.exports.parseAndInsert = async function(req){
             tableName = `${masterTableName}_${key}`;
             let childTableInfos = [];
             for(let rowData of value){
-                childTableInfos.push( {"file_list" : rowData, ...req.body.header, date_time: time});
+                childTableInfos.push( {"file_list" : rowData, ...req.header, date_time: time});
             }
             tableInfos.push({tableName ,tableData:childTableInfos});
         }

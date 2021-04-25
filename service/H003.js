@@ -31,12 +31,8 @@ module.exports.parseAndInsert = async function(req){
             for(const tableInfo of tableInfos){
                 winston.debug(JSON.stringify(tableInfo));
                 for(const chileTableData of tableInfo.tableData){
-                    let rslt = await db[tableInfo.tableName.toUpperCase()].findOne({where: {keeper_id: chileTableData.keeper_id,
-                            process_id: chileTableData.process_id}}).then(user => {
-                        if(user){
-                            user.update({process_status: chileTableData.process_status, date_time: time })
-                        }
-                    });
+                    let rslt = await db[tableInfo.tableName.toUpperCase()].create(chileTableData,{ transaction: t });
+                    //rslt = new Error("임의 발생");
                     if(rslt instanceof Error){
                         throw new rslt;
                     }

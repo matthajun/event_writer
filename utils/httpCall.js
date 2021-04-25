@@ -4,11 +4,11 @@
 var request = require("request");
 var winston = require('../config/winston')(module);
 
-
+var https = require('https');
 
 exports.Rest = function (method, url, headers, query, callback) {
-    winston.debug("Rest method / url : ", method + " / " + url);
-    winston.debug("Rest query : ", query);
+    //winston.debug("Rest method / url : " + method + " / " + url);
+    //winston.debug("Rest query : " + query);
     if (!headers) {
         headers = {
             //Authorization: global.esAuth,
@@ -25,16 +25,17 @@ exports.Rest = function (method, url, headers, query, callback) {
             rejectUnauthorized: false,
             followRedirect: true,
             maxRedirects: 10,
-            qs: query
+            body: query,
+            json: true
         }, function (error, response, body) {
             if (error) {
-                winston.error("GET ERR : ", url, query, error);
+                winston.error("GET ERR : "+ url + query + error);
                 return callback("ERROR : " + error);
             } else {
                 if (response.statusCode >= 200 && response.statusCode < 300) {
                     return callback(null, body);
                 } else {
-                    winston.error("GET ERR : ", url, query, response.statusCode);
+                    winston.error("GET ERR : " + url + query + response.statusCode);
                     return callback("ERROR[" + response.statusCode + "]" + " : " + body, null);
                 }
             }
@@ -43,11 +44,12 @@ exports.Rest = function (method, url, headers, query, callback) {
         request({
             uri: url,
             method: method.toString(),
-            headers: headers,
+            //headers: headers,
             timeout: 30000,
             strictSSL: false,
             rejectUnauthorized: false,
-            body: query
+            body: query,
+            json: true
         }, function (error, response, body) {
             if (error) {
                 winston.error("POST RESPONSE ERR : ", body);
@@ -77,12 +79,13 @@ exports.Rest = function (method, url, headers, query, callback) {
 };
 
 exports.Call = function (method, url, query, callback) {
-    winston.debug("method / url : ", method + " / " + url);
-    winston.debug("query : ", query);
-
+    //winston.debug("method / url : " + method + " / " + url);
+    //winston.debug("query : " + query);
+    const auth = 'Basic ' +  Buffer.from('admin:1111').toString('base64');
     var headers = {
         //Authorization: global.esAuth,
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
+        ,'Authorization' : auth
     };
     this.Rest(method, url, headers, query, function (err, data) {
         if (err) {

@@ -9,10 +9,11 @@ let tableName = "";
 let masterTableName = "";
 
 module.exports.parseAndInsert = async function(req){
-    masterTableName =  tablePrefix + req.body.header.message_id;
+    console.log(101010101010,req);
+    masterTableName =  tablePrefix + req.header.message_id;
     const time = setDateTime.setDateTime();
-    const reqBodyData = {...req.body.body.result, ...req.body.header, date_time: time};
-    const reqBodyData_device = {...req.body.body};
+    const reqBodyData = {...req.body.result, ...req.header, date_time: time};
+    const reqBodyData_device = {...req.body};
     const tableInfos = [];
 
     tableInfos.push({tableName:masterTableName, tableData:_.cloneDeep(reqBodyData)});
@@ -31,7 +32,7 @@ module.exports.parseAndInsert = async function(req){
             tableName = `${masterTableName}_${key}`;
             let childTableInfos = [];
             for(let rowData of value){
-                childTableInfos.push( {...rowData , ...req.body.header, date_time: time});
+                childTableInfos.push( {...rowData , ...req.header, date_time: time});
             }
             tableInfos.push({tableName ,tableData:childTableInfos});
         }
@@ -44,7 +45,7 @@ module.exports.parseAndInsert = async function(req){
             winston.info("********************************************************************************");
             winston.info("*******************query start *************************");
             for(const tableInfo of tableInfos){
-                winston.debug(JSON.stringify(tableInfo));
+                //winston.debug(JSON.stringify(tableInfo));
                 if(!Array.isArray(tableInfo.tableData)){
                     let rslt = await db[tableInfo.tableName.toUpperCase()].create(tableInfo.tableData,{ transaction: t });
                     //rlst =  new Error("임의 발생");
