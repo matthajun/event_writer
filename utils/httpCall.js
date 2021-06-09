@@ -15,7 +15,7 @@ exports.Rest = function (method, url, headers, query, callback) {
             'Content-Type': 'application/json',
         };
     }
-    if (method.toString().toUpperCase() == 'GET') {
+    if (method.toString().toUpperCase() === 'GET') {
         request({
             uri: url,
             method: method.toString().toUpperCase(),
@@ -55,9 +55,9 @@ exports.Rest = function (method, url, headers, query, callback) {
                 winston.error("POST RESPONSE ERR : ", body);
                 return callback("ERROR : " + error);
             } else {
-                if (url.indexOf("/restart?t=5") > 0 && url.indexOf(global.systemServiceUrl) == 0) {
-                    if (response.statusCode == 204) {
-                        winston.debug("POST RESPONSE : ", body);
+                if (url.indexOf("/restart?t=5") > 0 && url.indexOf(global.systemServiceUrl) === 0) {
+                    if (response.statusCode === 204) {
+                        //winston.debug("POST RESPONSE : ", body);
                         return callback(null, body);
                     } else {
                         winston.error("POST RESPONSE : ", response.statusCode, body);
@@ -65,7 +65,7 @@ exports.Rest = function (method, url, headers, query, callback) {
                     }
                 } else {
                     if (response.statusCode >= 200 && response.statusCode < 300) {
-                        winston.debug("POST RESPONSE : ", body);
+                        //winston.debug("POST RESPONSE : ", body);
                         return callback(null, body);
                     } else {
                         winston.error("POST RESPONSE : ", response.statusCode, body);

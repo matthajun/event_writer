@@ -17,7 +17,7 @@ const indexRouter = require('./routes');
 const { sequelize } = require('./models');
 const passportConfig = require('./passport');
 
-const app = express();
+var app = express();
 passportConfig();
 app.set('port', process.env.PORT || 8002);
 
@@ -32,10 +32,18 @@ const stix_event = require('./STIX_service/stixInsert_event');
 const stix_state = require('./STIX_service/stixInsert_state');
 const stix_traffic = require('./STIX_service/stixInsert_traffic');
 
-const bwinsert = require('./STIX_service/bwInsert_schedule');
-const time = require('./utils/setDateTime');
+const H006 = require('./schedule/H006_schedule');
+const H011 = require('./schedule/H011_schedule');
+const H013 = require('./schedule/H013_schedule');
+const H014 = require('./schedule/H014_schedule');
 
-//app.set('view engine', 'html');
+const white = require('./bw_service/H004_policy_ip');
+const black = require('./bw_service/H004_policy_bl');
+const communi = require('./bw_service/H004_policy_connect');
+
+const H008_t = require('./schedule/H008_test');
+const http = require('http');
+const https = require('https');
 
 sequelize.sync({ force: false })
     .then(() => {
@@ -44,6 +52,19 @@ sequelize.sync({ force: false })
     .catch((err) => {
         winston.error(err.stack);
     });
+
+var protocol = 'https';
+
+if (protocol === 'https') {
+    var sslConfig = require('./config/ssl-config');
+    var options = {
+        key: sslConfig.privateKey,
+        cert: sslConfig.certificate
+    };
+    server = https.createServer(options, app).listen(process.env.SSL_PORT);
+} else {
+    server = http.createServer(app);
+}
 
 app.use(morgan( process.env.NODE_ENV !== 'production'?'dev':'combined',{stream:winston.httpLogStream}));
 
@@ -57,7 +78,7 @@ app.use(session({
     saveUninitialized: false,
     secret: process.env.COOKIE_SECRET,
     cookie: {
-        httpOnly: true,
+        httpOnly: false,
         secure: false,
     },
 }));
@@ -85,32 +106,37 @@ app.use((req, res, next) => {
     next(error);
 });
 
-
 app.use((err, req, res, next) => {
     res.locals.message = err.message;
     res.locals.error = process.env.NODE_ENV !== 'production' ? err : {};
     res.status(err.status || 500);
     winston.error(err.stack);
+    console.log(req.body);
     res.json(makejson.makeResData(err,req))
 });
 
 app.set('etag', false);
 
-app.listen(app.get('port'), () => {
-    winston.info(app.get('port')+ '번 포트에서 대기중');
-});
-
 H005.scheduleInsert();
 H005_connect.scheduleInsert();
-H008.scheduleInsert(); // 5분간격으로 파일 요청(테스트용) 본래는 화면존재 (0423)
+H008.scheduleInsert();
+//H008_t.scheduleInsert();
 
 HighRank.searchAndtransm();
 
-initialize.Initialize(); //H004,H010 테이블 초기화, 테스트용 2분 스케쥴(0423)
+initialize.Initialize(); //H004,H010 테이블 초기화
 
 stix_anomaly.searchAndInsert();
 stix_event.searchAndInsert();
 stix_state.searchAndInsert();
 stix_traffic.searchAndInsert();
 
-//bwinsert.searchAndInsert();   //보안정책 테이블로 이동하는 스케쥴, 테스트를 위해 잠시 막아둠(0423)
+H013.scheduleInsert();
+H014.scheduleInsert();
+
+H006.scheduleInsert();
+H011.scheduleInsert();
+
+white.searchAndInsert();
+black.searchAndInsert();
+communi.searchAndInsert();

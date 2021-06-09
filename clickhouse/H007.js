@@ -27,7 +27,7 @@ module.exports.parseAndInsert = async function(req) {
     const contents = `${req_body.message_id}`+'\',\''+`${req_body.keeper_id}`+'\',\''+`${req_body.send_time}`+'\',\''+`${req_body.unit_id}`
         +'\',\''+`${req_body.make_id}`+'\',\''+`${req_body.anomaly_type}`+'\',\''+`${req_body.protocol_type}`+'\',\''+`${req_body.protocol_detail}`+'\',\''+`${req_body.src_ip}`+'\',\''+`${req_body.src_mac}`
         +'\',\''+`${req_body.src_port}`+'\',\''+`${req_body.dst_ip}`+'\',\''+`${req_body.dst_mac}`+'\',\''+`${req_body.dst_port}`+'\',\''+`${req_body.payload}`+'\',\''+`${req_body.packet_code}`
-        +'\',\''+`${req_body.packet_time}`+'\',\''+`${req_body.date_time}`;
+        +'\',\''+`${req_body.policy_name}`+'\',\''+`${req_body.packet_time}`+'\',\''+`${req_body.event_time}`+'\',\''+`${req_body.date_time}`;
 
     const queries = [
         `insert into dti.${tableName} VALUES (\'${contents}\')`

@@ -28,13 +28,18 @@ module.exports = class KDN_AMLY_H001 extends Sequelize.Model {
                 type: Sequelize.STRING(10),
                 allowNull: true,
             },
-            disk_user_size: {
+            disk_use_size: {
                 type: Sequelize.STRING(10),
                 allowNull: true,
             },
             date_time: {
                 type: Sequelize.STRING(30),
                 allowNull: true,
+            },
+            trans_tag: {
+                type: Sequelize.STRING(10),
+                allowNull: false,
+                defaultValue: 'C',
             },
         }, {
             sequelize,

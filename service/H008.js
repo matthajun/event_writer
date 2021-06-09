@@ -9,7 +9,6 @@ let tableName = "";
 let masterTableName = "";
 
 module.exports.parseAndInsert = async function(req){
-    console.log(888888,req);
     masterTableName =  tablePrefix + req.header.message_id;
     const time = setDateTime.setDateTime();
     const reqBodyData = {...req.body.result, ...req.header, date_time: time};
@@ -33,7 +32,6 @@ module.exports.parseAndInsert = async function(req){
     try {
 
         const result = await db.sequelize.transaction(async (t) => {
-            winston.info("********************************************************************************");
             winston.info("*******************query start *************************");
             for(const tableInfo of tableInfos){
                 winston.debug(JSON.stringify(tableInfo));
@@ -53,7 +51,6 @@ module.exports.parseAndInsert = async function(req){
                     }
                 }
             }
-            winston.info("********************************************************************************");
             winston.info("*******************query end *************************");
         });
 

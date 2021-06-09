@@ -2,8 +2,9 @@ const appRoot = require('app-root-path');    // app root 경로를 가져오는 
 const winston = require('winston');            // winston lib
 const process = require('process');
 const winstonDaily = require('winston-daily-rotate-file');
-const path = require('path')
+const path = require('path');
 const mt = require('moment-timezone');
+const moment = require('moment');
 const date = mt().tz('Asia/Seoul');
 
 const { combine, timestamp, label, printf  } = winston.format;
@@ -18,13 +19,28 @@ const myFormat = printf(({ level, message, label, timestamp ,stack}) => {
     return `${timestamp} [${label}] ${level}: ${message}`;    // log 출력 포맷 정의
 });
 
+const appendTimestamp = winston.format((info, opts) => {
+    if(opts.tz)
+        info.timestamp = moment().tz(opts.tz).format('YYYY-MM-DD, HH:mm:ss');
+    return info;
+});
+
+const myCustomLevels = {
+    levels: {
+        view: 0,
+        error: 1,
+        info: 3,
+        debug: 4
+    }
+};
+
 const logger = function (callingModule) {
 
-
     let logger = new winston.createLogger({
+        levels: myCustomLevels.levels,
         transports: [
             new winstonDaily({
-                level: 'info',
+                level: 'debug',
                 datePattern: 'YYYY-MM-DD',
                 dirname: logDir,
                 filename: `%DATE%.log`,
@@ -49,12 +65,28 @@ const logger = function (callingModule) {
                     timestamp(),
                     myFormat
                 )
+            }),
+            new winstonDaily({
+                level: 'view',
+                datePattern: 'YYYY-MM-DD',
+                dirname: logDir + '/view',  // error.log 파일은 /logs/error 하위에 저장
+                filename: `%DATE%.view.log`,
+                maxFiles: 60,
+                zippedArchive: true,
+                json: true,
+                format: combine(
+                    appendTimestamp({ tz: 'Asia/Seoul'}),
+                    printf(info => {
+                        return `${info.timestamp} : \n ${JSON.stringify(info.message, null, 2)}`;
+                    })
+                )
             })
         ],
         exitOnError: false,
     });
 
     const httpLogger = winston.createLogger({ // NOTE: http status 로그를 남기기 위함.
+        levels: myCustomLevels.levels,
         format: combine(
             label({ label: 'http' }),
             timestamp(),
@@ -79,7 +111,8 @@ const logger = function (callingModule) {
 
     if(process.env.NODE_ENV !== 'production'){
         logger.add(
-             new winston.createLogger({
+            new winston.createLogger({
+                levels: myCustomLevels.levels,
                 transports: [
                     new winston.transports.Console({
                         level:'debug',
@@ -98,6 +131,7 @@ const logger = function (callingModule) {
         );
         httpLogger.add(
             new winston.createLogger({
+                levels: myCustomLevels.levels,
                 transports: [
                     new winston.transports.Console({
                         json: false,
@@ -122,9 +156,9 @@ const logger = function (callingModule) {
                 message: message,
             });
         },
-    }
+    };
 
     return logger;
-}
+};
 
 module.exports = logger;

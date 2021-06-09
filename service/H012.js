@@ -29,6 +29,7 @@ module.exports.parseAndInsert = async function(req){
             tableInfos.push({tableName:masterTableName ,tableData:childTableInfos});
         }
     }
+
     let rtnResult = {};
     try {
 

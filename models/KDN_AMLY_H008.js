@@ -25,6 +25,10 @@ module.exports = class KDN_AMLY_H008 extends Sequelize.Model {
                 allowNull: true,
             },
             res_msg: {
+                type: Sequelize.STRING(200),
+                allowNull: true,
+            },
+            contents: {
                 type: Sequelize.TEXT,
                 allowNull: true,
             },

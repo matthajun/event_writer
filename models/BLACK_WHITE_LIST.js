@@ -12,6 +12,18 @@ module.exports = class BLACK_WHITE_LIST extends Sequelize.Model {
                 type: Sequelize.INTEGER,
                 allowNull: true,
             },
+            name: {
+                type: Sequelize.STRING(50),
+                allowNull: true,
+            },
+            stationId: {
+                type: Sequelize.STRING(50),
+                allowNull: true,
+            },
+            powerGenId: {
+                type: Sequelize.STRING(50),
+                allowNull: true,
+            },
             unit: {
                 type: Sequelize.STRING(50),
                 allowNull: true,
@@ -20,40 +32,12 @@ module.exports = class BLACK_WHITE_LIST extends Sequelize.Model {
                 type: Sequelize.STRING(50),
                 allowNull: true,
             },
-            srcIp: {
-                type: Sequelize.STRING(50),
-                allowNull: true,
-            },
-            dstIp: {
-                type: Sequelize.STRING(50),
-                allowNull: true,
-            },
-            srcPort: {
-                type: Sequelize.STRING(45),
-                allowNull: true,
-            },
-            dstPort: {
-                type: Sequelize.STRING(45),
-                allowNull: true,
-            },
             port: {
                 type: Sequelize.STRING(50),
                 allowNull: true,
             },
             ip: {
                 type: Sequelize.STRING(45),
-                allowNull: true,
-            },
-            description: {
-                type: Sequelize.STRING(60),
-                allowNull: true,
-            },
-            powerGenId: {
-                type: Sequelize.STRING(50),
-                allowNull: true,
-            },
-            subnet: {
-                type: Sequelize.INTEGER,
                 allowNull: true,
             },
             fstDttm: {
@@ -76,6 +60,17 @@ module.exports = class BLACK_WHITE_LIST extends Sequelize.Model {
                 type: Sequelize.STRING(1),
                 allowNull: true,
             },
+            trans_tag: {
+                type: Sequelize.STRING(5),
+                allowNull: false,
+                defaultValue: 'C',
+            },
+            deploy: {
+                type: Sequelize.STRING(50),
+                allowNull: false,
+                defaultValue: 'Y',
+            },
+
         }, {
             sequelize,
             timestamps: false,

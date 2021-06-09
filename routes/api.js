@@ -13,9 +13,11 @@ const H011 = require('../service/H011');
 
 const H004 = require('../schedule/H004_req');
 const H004_te = require('../service/H004');
+const H009 = require('../service/H009');
 const H010 = require('../schedule/H010_req');
 const H010_te = require('../service/H010');
 const H012 = require('../service/H012');
+const H015 = require('../service/H015');
 
 const CH_H007 = require('../clickhouse/H007');
 
@@ -63,38 +65,38 @@ router.post('/v1', async (req, res, next) => {
                 result = await  H004_te.parseAndInsert(req);
                 break;
 
-            case "H005" :
-                break;
-
             case "H006" :
                 result = await  H001.parseAndInsert(req);
-                res.json(makejson.makeResData(null,req));
-                H004.ResInsert(req.body.body.policy_type);
+                //res.json(makejson.makeResData(null,req));
+                //H004.ResInsert(req.body.body.policy_type);
                 break;
 
             case "H007" :
+                winston.info(JSON.stringify(req.body));
                 result = await  H001.parseAndInsert(req);
                 ch_result = await CH_H007.parseAndInsert(req);
-                break;
-
-            case "H008" :
                 break;
 
             case "H009" :
                 result = await  H001.parseAndInsert(req);
                 break;
+
             case "H010" :
                 result = await H010_te.parseAndInsert(req);
                 break;
 
             case "H011" :
                 result = await  H011.parseAndInsert(req);
-                res.json(makejson.makeResData(null,req));
-                H010.ResInsert();
+                //res.json(makejson.makeResData(null,req));
+                //H010.ResInsert();
                 break;
 
             case 'H012' :
                 result = await H012.parseAndInsert(req);
+                break;
+
+            case 'H015' :
+                result = await H015.parseAndInsert(req);
                 break;
 
             default:
@@ -115,44 +117,44 @@ router.post('/v1', async (req, res, next) => {
     }
 });
 
-router.post('/v1/:id', uploader.single('file'), async (req, res, next)=> {
+router.post('/v1/:id', uploader.single('pcap_file'), async (req, res, next)=> {
    try {
         winston.debug("post id " + req.params.id);
         const codeId = req.params.id;
 
         let result = {};
+        let reqData = {};
+        const pcap_res = {"body":{"header":{"message_id":"H009","keeper_id":"EWP_01_01"}}};
+
         switch (codeId) {
-            case "json" :
-                //confirm_code 확인
-                const reqData = req.body;
+            case "pcap" :
+                winston.info(req.body.json_data);
+                reqData = JSON.parse(req.body.json_data);
+
                 const reqConfirmCode = reqData.header.confirm_code;
-                const localMakeConfirmCode = await confirmutils.makeConfirmCode(JSON.stringify(reqData.body));
+                const localMakeConfirmCode = await confirmutils.makeConfirmCode(reqData.body);
 
                 if (reqConfirmCode !== localMakeConfirmCode) {
                     winston.error(`${localMakeConfirmCode} ,  ${reqConfirmCode}`);
                     const errCode = "93";
                     throw Error(`{"res_cd":"${errCode}"}`);
                 }
-
                 //이상없으면 H009테이블로 인서트
-                result = await H001.parseAndInsert(req);
-                break;
-
-            case "pcap" :
-                console.log(req);
-                winston.info('******************** pcap 파일을 수신하여 저장합니다. file is downloading.********************');
-                console.log(req.file);
-                req.body.header = {message_id: 'H009', keeper_id: process.env.KEEPER_ID, send_time: time.setDateTime()};
+                winston.info('******************** H009 인서트 시작! *********************');
+                result = await H009.parseAndInsert(reqData);
+                winston.info('******************** pcap 파일'+reqData.body.file_name+'을 수신하여 저장합니다. file is downloading.********************');
                 break;
 
             default:
-                throw Error(`{"res_cd":"99"}`);
+                throw Error(`{"res_cd":"99"}`)
         }
 
         if(result instanceof Error){
+            winston.info('**************** pcap 수신 에러 발생! ***************');
             throw new Error(result);
-        }else{
-            res.json(makejson.makeResData(null,req));
+        }else {
+            res.json(makejson.makeResData(null, pcap_res));
+            winston.info('************* 파일 응답을 보냈습니다.************   ');
         }
 
    } catch(err) {

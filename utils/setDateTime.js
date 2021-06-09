@@ -4,12 +4,15 @@ module.exports.setDateTime = function () {
     return moment().format("YYYYMMDDHHmmss");
 };
 
-module.exports.setDateTime_ago_5 = function () {
-    let a = moment().subtract(5,'minutes');
+module.exports.setDateTime_ago = function (mm) {
+    let a = moment().subtract(mm,'minutes');
     return a.format('YYYYMMDDHHmm')
 };
 
-module.exports.setDateTime_ago_10 = function () {
-    let a = moment().subtract(10,'minutes');
-    return a.format('YYYYMMDDHHmm')
+module.exports.changeFormat = function (time) {
+    return moment(time).format('YYYYMMDDHHmm')
+};
+
+module.exports.setDateTimeforHistory = function () {
+    return moment().format("YYYY.MM.DD, HH:mm:ss");
 };

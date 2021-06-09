@@ -61,7 +61,7 @@ module.exports = class STIX_EVENT extends Sequelize.Model {
                 defaultValue: '',
             },
             original: {
-                type: Sequelize.STRING(100),
+                type: Sequelize.TEXT,
                 allowNull: true,
                 defaultValue: '',
             },

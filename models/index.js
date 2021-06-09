@@ -25,7 +25,8 @@ fs
         const Model = require(path.join(__dirname, file));
         db[Model.name] = Model;
         Model.init(sequelize);
-        if(Model.name !=='User')Model.removeAttribute('id');
+        if(Model.name.indexOf('WHITE') === -1 && Model.name.indexOf('REQUEST') === -1)
+            Model.removeAttribute('id');
     }catch (e) {
         console.log(e);
     }

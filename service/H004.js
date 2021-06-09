@@ -9,7 +9,6 @@ let tableName = "";
 let masterTableName = "";
 
 module.exports.parseAndInsert = async function(req){
-    console.log(444444444,req);
     masterTableName =  tablePrefix + req.header.message_id;
     const time = setDateTime.setDateTime();
     const reqBodyData = {...req.body, ...req.body.result, ...req.header, date_time: time};

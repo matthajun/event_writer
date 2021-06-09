@@ -1,15 +1,13 @@
 const winston = require('../config/winston')(module);
 const sequelize = require('sequelize');
-
 const schedule = require('node-schedule');
-const KeyChange = require('../utils/KeyChange');
 
 const stixInsert = require('./stixInsert');
 const db = require('../models');
 const {QueryTypes} = require('sequelize');
 
 module.exports.searchAndInsert = async function() {
-    schedule.scheduleJob('12 * * * * *', async function () {
+    schedule.scheduleJob('22 * * * * *', async function () {
         const tableName = process.env.H007;
         const event_tableName = process.env.STIX_EVENT;
 
@@ -17,35 +15,33 @@ module.exports.searchAndInsert = async function() {
         try {
 
             const result = await db.sequelize.transaction(async (t) => {
-                winston.info("********************************************************************************");
-                winston.info("*******************query start *************************");
+                winston.info("************************* Query start ******************************");
 
                 let rslt = await db.sequelize.query(
-                    'select * from kdn_amly_H007 ' +
-                    'where trans_tag_e= \'C\' '
+                    'SELECT \'Event\' as flag, packet_time as timeAgent, keeper_id as nameAgent, make_id as vendorAgent, unit_id as idOrganizationAgent, ' +
+                'anomaly_type as name, packet_time as timeAttackStart, packet_time as timeAttackEnd, src_ip as ipAttacker, dst_ip as ipVictim, ' +
+                'src_mac as macAttacker, dst_mac as macVictim, src_port as portAttacker, dst_port as portVictim, protocol_type as protocol, ' +
+                'anomaly_type as levelRisk FROM dti.kdn_amly_H007 where trans_tag_e = \'C\' '
                     , {
                         type: QueryTypes.SELECT
                     }
                 ).then(async users => {
-                    let results = {tableName: event_tableName, tableData: users};
-                    KeyChange.KeyChange_event(results);
-                    stixInsert.ParseandInsert(results);
-                    let rt = await db[tableName.toUpperCase()].update({trans_tag_e: 'E'},
-                        {
-                            where: {
-                                trans_tag_e: 'C'
-                            }
-                        });
-                    if (rt instanceof Error) {
-                        throw new rt;
+                    if(users.length) {
+                        let results = {tableName: event_tableName, tableData: users};
+
+                        await stixInsert.ParseandInsert(results);
+                        await db[tableName.toUpperCase()].update({trans_tag_e: 'E'},
+                            {
+                                where: {
+                                    trans_tag_e: 'C'
+                                }
+                            });
                     }
                 });
 
                 if (rslt instanceof Error) {
                     throw new rslt;
                 }
-                winston.info("********************************************************************************");
-                winston.info("*******************query end *************************");
             })
         } catch (error) {
             // If the execution reaches this line, an error occurred.

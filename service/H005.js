@@ -8,13 +8,13 @@ let tablePrefix = process.env.ANOMALY_TABLE_PREFIX;
 let masterTableName = "";
 
 module.exports.parseAndInsert = async function(req){
-    console.log(5555555,req);
     masterTableName =  tablePrefix + req.header.message_id;
     const time = setDateTime.setDateTime();
     const reqBodyData = {...req.body, ...req.body.result, ...req.header, date_time: time};
     const tableInfos = [];
 
     tableInfos.push({tableName:masterTableName, tableData:_.cloneDeep(reqBodyData)});
+
     let rtnResult = {};
     try {
         const result = await db.sequelize.transaction(async (t) => {

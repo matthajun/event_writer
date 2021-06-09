@@ -75,6 +75,14 @@ module.exports = class MOTIE_SRCIP_HISTORY extends Sequelize.Model {
                 type: Sequelize.STRING(30),
                 allowNull: true,
             },
+            res_cd: {
+                type: Sequelize.STRING(20),
+                allowNull: true,
+            },
+            res_msg: {
+                type: Sequelize.STRING(100),
+                allowNull: true,
+            },
         }, {
             sequelize,
             timestamps: false,

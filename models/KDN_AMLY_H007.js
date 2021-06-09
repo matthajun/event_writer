@@ -69,10 +69,18 @@ module.exports = class KDN_AMLY_H007 extends Sequelize.Model {
                 allowNull: true,
             },
             packet_code: {
-                type: Sequelize.STRING(30),
+                type: Sequelize.TEXT,
+                allowNull: true,
+            },
+            policy_name: {
+                type: Sequelize.STRING(50),
                 allowNull: true,
             },
             packet_time: {
+                type: Sequelize.STRING(30),
+                allowNull: true,
+            },
+            event_time: {
                 type: Sequelize.STRING(30),
                 allowNull: true,
             },

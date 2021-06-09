@@ -20,6 +20,11 @@ module.exports = class KDN_AMLY_H011 extends Sequelize.Model {
                 allowNull: false,
                 defaultValue: 'local',
             },
+            state: {
+                type: Sequelize.STRING(5),
+                allowNull: false,
+                defaultValue: 'C',
+            },
             date_time: {
                 type: Sequelize.STRING(30),
                 allowNull: true,

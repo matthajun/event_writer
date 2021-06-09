@@ -45,11 +45,11 @@ module.exports = class COMMUNI_WHITE_LIST extends Sequelize.Model {
                 allowNull: true,
             },
             srcPort: {
-                type: Sequelize.STRING(45),
+                type: Sequelize.STRING(50),
                 allowNull: true,
             },
             dstPort: {
-                type: Sequelize.STRING(45),
+                type: Sequelize.STRING(50),
                 allowNull: true,
             },
             state: {

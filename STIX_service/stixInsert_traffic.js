@@ -1,43 +1,39 @@
 const winston = require('../config/winston')(module);
 const sequelize = require('sequelize');
-
 const schedule = require('node-schedule');
-const KeyChange = require('../utils/KeyChange');
 
 const stixInsert = require('./stixInsert');
 const db = require('../models');
 
 module.exports.searchAndInsert = async function() {
-    schedule.scheduleJob('7 * * * * *', async function () {
+    schedule.scheduleJob('26 * * * * *', async function () {
         const tableName = process.env.H012;
         const event_tableName = process.env.STIX_TRAFFIC;
 
         let rtnResult = {};
         try {
-
             const result = await db.sequelize.transaction(async (t) => {
-                winston.info("********************************************************************************");
-                winston.info("*******************query start *************************");
+                winston.info("************************* Query start ******************************");
 
-                let rslt = db[tableName.toUpperCase()].findAll({where: {trans_tag_t: 'C'}}).then(users => {
-                    if(users){
+                let rslt = await db[tableName.toUpperCase()].findAll({attributes: [['send_time', 'timeAgent'],
+                         ['keeper_id', 'nameAgent'], ['make_id', 'vendorAgent'], ['unit_id', 'idOrganizationAgent'], ['packet_cnt', 'ppsTotal'],
+                        ['inbound_cnt', 'bpsTotal'], ['packet_byte', 'inData'], ['inbound_byte', 'inPacket']], where: {trans_tag_t: 'C'}}).then(async users => {
+                    if(users.length){
                         let childInfos = [];
-
                         for(user of users) {
+                            let data = {...user.dataValues};
+                            data.flag = 'Traffic';
                             user.update({trans_tag_t: 'E'});
-                            childInfos.push(user.dataValues);
+                            childInfos.push(data);
                         }
                         let results = {tableName: event_tableName, tableData: childInfos};
-                        KeyChange.KeyChange_traffic(results);
-                        stixInsert.ParseandInsert(results);
+                        await stixInsert.ParseandInsert(results);
                     }
                 });
 
                 if (rslt instanceof Error) {
                     throw new rslt;
                 }
-                winston.info("********************************************************************************");
-                winston.info("*******************query end *************************");
             })
 
         } catch (error) {

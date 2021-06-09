@@ -30,8 +30,7 @@ module.exports.parseAndInsert = async function(req, tableName){
     try {
 
         const result = await db.sequelize.transaction(async (t) => {
-            winston.info("********************************************************************************");
-            winston.info("*******************query start *************************");
+            winston.info("******************* Query start *************************");
             for(const tableInfo of tableInfos){
                 //winston.debug(JSON.stringify(tableInfo));
                 if(!Array.isArray(tableInfo.tableData)){
@@ -50,8 +49,6 @@ module.exports.parseAndInsert = async function(req, tableName){
                     }
                 }
             }
-            winston.info("********************************************************************************");
-            winston.info("*******************query end *************************");
         });
 
     } catch (error) {

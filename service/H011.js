@@ -8,7 +8,7 @@ let tablePrefix = process.env.ANOMALY_TABLE_PREFIX;
 let masterTableName = "";
 
 module.exports.parseAndInsert = async function(req){
-    masterTableName =  tablePrefix + req.params.id;
+    masterTableName =  tablePrefix + req.body.header.message_id;
     const time = setDateTime.setDateTime();
     const reqBodyData = {...req.body.header, date_time: time};
     const tableInfos = [];

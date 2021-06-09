@@ -8,7 +8,7 @@ const stixInsert = require('./stixInsert');
 const {QueryTypes} = require('sequelize');
 
 module.exports.searchAndInsert = async function() {
-    schedule.scheduleJob('10 * * * * *', async function () {
+    schedule.scheduleJob('20 * * * * *', async function () {
         const tableName = process.env.H007;
         const stix_amly= process.env.STIX_ANOMALY;
 
@@ -16,10 +16,10 @@ module.exports.searchAndInsert = async function() {
         try {
 
             const result = await db.sequelize.transaction(async (t) => {
-                winston.info("********************************************************************************");
-                winston.info("*******************query start *************************");
+                winston.info("************************* Query start ******************************");
+
                 let rslt = await db.sequelize.query(
-                    'select message_id as flag,keeper_id as nameAgent,send_time as timeStart,send_time as timeEnd,'+
+                    'select \'Anomaly\' as flag,keeper_id as nameAgent,send_time as timeStart,send_time as timeEnd,'+
                 'unit_id as idOrganizationAgent,make_id as vendorAgent,anomaly_type as category,anomaly_type as score,'+
                 'payload as original,packet_time as timeAgent,codeNM as description from dti.kdn_amly_H007 '+
                 'inner join dti.motie_cmn_code on dti.kdn_amly_H007.anomaly_type=dti.motie_cmn_code.codeID '+
@@ -28,24 +28,20 @@ module.exports.searchAndInsert = async function() {
                         type: QueryTypes.SELECT
                     }
                 ).then(async users =>{
-                    let results = {tableName: stix_amly, tableData: users};
-                    stixInsert.ParseandInsert(results);
-                    let rt = await db[tableName.toUpperCase()].update({trans_tag_a: 'E'},
-                        {
-                            where: {
-                                trans_tag_a: 'C'
-                            }
-                        });
-                    if(rt instanceof Error){
-                        throw new rt;
+                    if(users.length) {
+                        let results = {tableName: stix_amly, tableData: users};
+                        await stixInsert.ParseandInsert(results);
+                        await db[tableName.toUpperCase()].update({trans_tag_a: 'E'},
+                            {
+                                where: {
+                                    trans_tag_a: 'C'
+                                }
+                            });
                     }
                 });
-
                 if (rslt instanceof Error) {
                     throw new rslt;
                 }
-                winston.info("********************************************************************************");
-                winston.info("*******************query end *************************");
             });
 
         } catch (error) {
