@@ -7,6 +7,7 @@ module.exports.obConvert = function (ob) {
             return {
                 request_id: _.get(_.find(v, 'request_id'), 'request_id'),
                 unit_id: _.get(_.find(v, 'unit_id'), 'unit_id'),
+                sanGubun: _.get(_.find(v, 'sanGubun'), 'sanGubun'),
                 make_id: i,
                 original: _.chain(v)
                     .groupBy('request_id')
@@ -32,6 +33,7 @@ module.exports.obConvert_connect = function (ob) {
             return {
                 request_id: _.get(_.find(v, 'request_id'), 'request_id'),
                 unit_id: _.get(_.find(v, 'unit_id'), 'unit_id'),
+                sanGubun: _.get(_.find(v, 'sanGubun'), 'sanGubun'),
                 make_id: i,
                 original: _.chain(v)
                     .groupBy('request_id')

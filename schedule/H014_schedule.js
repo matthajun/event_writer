@@ -25,7 +25,7 @@ module.exports.scheduleInsert = () => {
                             let data = {};
                             data = {...user.dataValues};
 
-                            let value = makejson.makeReqData_H014('H014', data);
+                            let value = makejson.makeReqData_H014('H014', data, '1');
                             winston.debug(JSON.stringify(value));
 
                             httpcall.Call('post', process.env.ANOMAL_ADDRESS, value, async function (err, res) {

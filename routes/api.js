@@ -20,6 +20,7 @@ const H012 = require('../service/H012');
 const H015 = require('../service/H015');
 
 const CH_H007 = require('../clickhouse/H007');
+const CH_007_sect = require('../clickhouse/H007_sect');
 
 const multer = require('multer');
 const storage = multer.diskStorage({
@@ -48,9 +49,9 @@ router.post('/v1', async (req, res, next) => {
             throw Error(`{"res_cd":"${errCode}"}`);
         }
 
-
-        let result =  {};
+        let result;
         let ch_result = {};
+        let ch_sect_result = {};
         switch (codeId) {
             case "H001" :
                 result = await  H001.parseAndInsert(req);
@@ -72,9 +73,10 @@ router.post('/v1', async (req, res, next) => {
                 break;
 
             case "H007" :
-                winston.info(JSON.stringify(req.body));
-                result = await  H001.parseAndInsert(req);
+                //winston.info(JSON.stringify(req.body));
+                result = await H001.parseAndInsert(req);
                 ch_result = await CH_H007.parseAndInsert(req);
+                ch_sect_result = await CH_007_sect.parseAndInsert(req);
                 break;
 
             case "H009" :
@@ -103,13 +105,27 @@ router.post('/v1', async (req, res, next) => {
                 throw Error(`{"res_cd":"99"}`);
         }
 
+        //Response
         if(result instanceof Error){ //Insert가 안되었을때
             throw new Error(result);
         }else if(ch_result instanceof Error){
             throw new Error(ch_result);
         }
+        else if (ch_sect_result instanceof Error){
+            throw new Error(ch_sect_result);
+        }
         else{
-            res.json(makejson.makeResData(null,req));
+            if (codeId === 'H015'){
+                winston.info('H015 return value : '+result);
+                res.json(makejson.makeResData(null, req, result));
+            }
+            else if (codeId === 'H007'){
+                winston.info('H007 return value : '+result);
+                res.json(makejson.makeResData(null, req, result));
+            }
+            else {
+                res.json(makejson.makeResData(null, req));
+            }
         }
 
     } catch (err) {

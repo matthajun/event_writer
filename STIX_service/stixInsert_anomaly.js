@@ -14,7 +14,6 @@ module.exports.searchAndInsert = async function() {
 
         let rtnResult = {};
         try {
-
             const result = await db.sequelize.transaction(async (t) => {
                 winston.info("************************* Query start ******************************");
 

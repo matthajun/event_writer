@@ -19,6 +19,10 @@ module.exports = class KDN_AMLY_H015 extends Sequelize.Model {
                 type: Sequelize.STRING(50),
                 allowNull: true,
             },
+            anomaly_seq: {
+                type: Sequelize.STRING(30),
+                allowNull: true,
+            },
             unit_id: {
                 type: Sequelize.STRING(15),
                 allowNull: true,

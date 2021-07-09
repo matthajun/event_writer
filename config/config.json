@@ -27,15 +27,17 @@
     "username": "ctilab1",
     "password": "deep@!09",
     "database": "dti",
-    "host": "192.168.7.52",
+    "host": "192.168.0.44",
     "port" : "13307",
     "dialect": "mysql",
-    "pool" : {
-      "max": 100 , "min" : 60 ,
-      "idle": 1000
+    "pool": {
+      "max": 100,
+      "min": 10,
+      "idle": 120000,
+      "acquire": 120000
     },
     "dialectOptions": {
-      "connectTimeout" : 30000
+      "connectTimeout": 40000
     }
   }
 }

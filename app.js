@@ -44,6 +44,8 @@ const communi = require('./bw_service/H004_policy_connect');
 const H008_t = require('./schedule/H008_test');
 const http = require('http');
 const https = require('https');
+const Transaction = require('./schedule/Transaction_schedule');
+const H007_fail = require('./service/H007_FAIL');
 
 sequelize.sync({ force: false })
     .then(() => {
@@ -111,7 +113,10 @@ app.use((err, req, res, next) => {
     res.locals.error = process.env.NODE_ENV !== 'production' ? err : {};
     res.status(err.status || 500);
     winston.error(err.stack);
-    console.log(req.body);
+    if(err.port === 8126 && err.address === (process.env.SECT_CH_ADDRESS).replace('http://','')){
+        winston.error('****************** 부문 시스템과의 연결이 끊겼습니다. ******************');
+        H007_fail.parseAndInsert(req);
+    }
     res.json(makejson.makeResData(err,req))
 });
 
@@ -140,3 +145,4 @@ H011.scheduleInsert();
 white.searchAndInsert();
 black.searchAndInsert();
 communi.searchAndInsert();
+Transaction.scheduleInsert();

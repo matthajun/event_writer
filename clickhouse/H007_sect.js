@@ -4,7 +4,7 @@ const setDateTime = require('../utils/setDateTime');
 const {ClickHouse} = require('clickhouse');
 const clickhouse = new ClickHouse({
     url: process.env.CH_ADDRESS,
-    port: 8124,
+    port: 8126,
     debug: false,
     basicAuth: null,
     isUseGzip: false,
@@ -30,23 +30,9 @@ module.exports.parseAndInsert = async function(req) {
     const queries = [
         `insert into dti.${tableName} VALUES (\'${contents}\')`
     ];
-    let rtnResult = {};
-    try {
-            winston.info("******************* CH query start *************************");
-            for (const query of queries) {
-                let rslt = await clickhouse.query(query).toPromise();
 
-                winston.info(query);
-                if (rslt instanceof Error) {
-                    throw new Error(rslt);
-                }
-            }
-            winston.info("******************* CH query end *************************");
-
-    } catch (error) {
-        winston.error(error.stack);
-        rtnResult = error;
-    } finally {
-        return rtnResult;
+    for (query of queries) {
+        let rslt = await clickhouse.query(query).toPromise();
+        winston.info(query);
     }
 };

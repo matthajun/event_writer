@@ -16,3 +16,8 @@ module.exports.changeFormat = function (time) {
 module.exports.setDateTimeforHistory = function () {
     return moment().format("YYYY.MM.DD, HH:mm:ss");
 };
+
+module.exports.setDateTime_dayago = function (mm) {
+    let a = moment().subtract(mm,'days');
+    return a.format('YYYYMMDDHHmm')
+};

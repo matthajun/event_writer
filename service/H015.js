@@ -7,8 +7,20 @@ const setDateTime = require('../utils/setDateTime');
 let tablePrefix = process.env.ANOMALY_TABLE_PREFIX;
 let masterTableName = "";
 
+const CH_H015 = require('../clickhouse/H015');
+
 module.exports.parseAndInsert = async function(req){
-    masterTableName =  tablePrefix + req.body.header.message_id;
+    let seq_array = [];
+    
+    if(req.body.body.send_type === '1') {
+        masterTableName = tablePrefix + req.body.header.message_id;
+    }
+    else if (req.body.body.send_type === '2') {
+        masterTableName = 'kdn_amly_H007';
+        winston.info(JSON.stringify(req.body));
+        await CH_H015.parseAndInsert(req);
+    }
+
     const time = setDateTime.setDateTime();
     const reqBodyData = {...req.body.body};
     const tableInfos = [];
@@ -44,6 +56,9 @@ module.exports.parseAndInsert = async function(req){
                         if(rslt instanceof Error){
                             throw new rslt;
                         }
+                        else {
+                            seq_array.push(chileTableData.anomaly_seq);
+                        }
                     }
                 }
             }
@@ -57,7 +72,11 @@ module.exports.parseAndInsert = async function(req){
         winston.error(error.stack);
         rtnResult =  error;
     } finally {
-        return rtnResult;
+        if(rtnResult instanceof Error) {
+            return rtnResult;
+        }
+        else {
+            return seq_array;
+        }
     }
-
 };

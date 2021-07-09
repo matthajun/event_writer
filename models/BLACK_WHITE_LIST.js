@@ -70,7 +70,10 @@ module.exports = class BLACK_WHITE_LIST extends Sequelize.Model {
                 allowNull: false,
                 defaultValue: 'Y',
             },
-
+            sanGubun: {
+                type: Sequelize.INTEGER,
+                allowNull: true,
+            },
         }, {
             sequelize,
             timestamps: false,

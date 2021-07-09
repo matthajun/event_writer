@@ -72,6 +72,10 @@ module.exports = class COMMUNI_WHITE_LIST extends Sequelize.Model {
                 type: Sequelize.STRING(60),
                 allowNull: true,
             },
+            sanGubun: {
+                type: Sequelize.INTEGER,
+                allowNull: true,
+            },
         }, {
             sequelize,
             timestamps: false,

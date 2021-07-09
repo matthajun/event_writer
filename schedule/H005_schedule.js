@@ -25,7 +25,7 @@ exports.scheduleInsert = () => {
                 `select concat(\'${process.env.UNIT_PREFIX}\',unit) AS unit, ` +
                 `IF(make = \'ABB\', \'EWP_01_UN_02_ABB\', ` +
                 `IF(make = \'GE\', \'EWP_01_UN_02_GE_GT\', NULL)) AS make, ` +
-                `port, ip, type from black_white_list ` +
+                `port, ip, type, sanGubun from black_white_list ` +
                 'where state= \'C\' and deploy = \'Y\''
                 ,{
                     type: QueryTypes.SELECT
@@ -33,8 +33,8 @@ exports.scheduleInsert = () => {
             ).then(async users => {
                 if(users.length){
                     winston.info("******************* H005 creation is founded!! *************************");
-                let blackInfos = [];
-                let whiteInfos = [];
+                    let blackInfos = [];
+                    let whiteInfos = [];
 
                 for (let user of users) {
                     if (user.type === 0) { //blacklist 이다.
@@ -49,6 +49,7 @@ exports.scheduleInsert = () => {
                     const child_whiteInfos = obc.obConvert(whiteInfos);
 
                     for (let k of child_whiteInfos) {
+                        //console.log(k);
                         let value = makejson.makeReqData_H005_wh(k, 11);
                         winston.debug(JSON.stringify(value));
                         httpcall.Call('post', process.env.ANOMAL_ADDRESS, value, async function (err, res) {
@@ -99,7 +100,7 @@ exports.scheduleInsert = () => {
                                     winston.error("HTTP CALL Error! at blacklist");
                                 }
                             });
-                        }, 100)
+                        }, 300)
                     }
                 }
 
@@ -134,10 +135,12 @@ exports.scheduleInsert = () => {
                             let data = {...user.dataValues};
                             user.update({state:'E'});
 
-                            //부문으로 업데이트
-                            winston.debug(JSON.stringify(data));
-                            let tableInfo = {tableName: tableName, tableData: data};
-                            makereq.highrankPush(tableInfo);
+                            if(data.sanGubun === 1) {
+                                //부문으로 업데이트
+                                winston.debug(JSON.stringify(data));
+                                let tableInfo = {tableName: tableName, tableData: data};
+                                makereq.highrankPush(tableInfo);
+                            }
 
                             if (data.type === 0) { //blacklist 이다.
                                 let temp = keychange.KeyChange_h005_update(data);
@@ -152,6 +155,7 @@ exports.scheduleInsert = () => {
 
                             for (let k of child_whiteInfos) {
                                 let value = makejson.makeReqData_H005_wh(k, 11);
+                                console.log(value);
                                 if(!value.body.request_id)
                                     value.body.request_id=getRequest.getRequestId('H005');
                                 winston.debug(JSON.stringify(value));

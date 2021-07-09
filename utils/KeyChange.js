@@ -9,6 +9,10 @@ module.exports.KeyChange_h005 = function (table) {
         Object.defineProperty(k, 'make_id',
             Object.getOwnPropertyDescriptor(k, 'make'));
         delete k['make'];
+
+        /*Object.defineProperty(k, 'created_system',
+            Object.getOwnPropertyDescriptor(k, 'sanGubun'));
+        delete k['sanGubun'];*/
     }
 };
 
@@ -31,6 +35,8 @@ module.exports.KeyChange_h005_update = function (data) {
     if(data.type === 0)
         result.port = data.port;
 
+    result.sanGubun = data.sanGubun;
+
     return result;
 };
 
@@ -48,6 +54,7 @@ module.exports.KeyChange_h005_update_communi = function (data) {
     let result = {
         unit_id: unit_id,
         make_id: make_id,
+        sanGubun : data.sanGubun,
         protocol_type: data.protocolType,
         protocol_detail: data.detailProtocol,
         src_ip: data.srcIp,

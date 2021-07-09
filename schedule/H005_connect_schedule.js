@@ -25,7 +25,7 @@ exports.scheduleInsert = () => {
                 `select concat(\'${process.env.UNIT_PREFIX}\', unit) AS unit, ` +
                 `IF(make = \'ABB\', \'EWP_01_UN_02_ABB\', ` +
                 `IF(make = \'GE\', \'EWP_01_UN_02_GE_GT\', NULL)) AS make, ` +
-                `protocolType AS protocol_type, detailProtocol AS protocol_detail, srcIp AS src_ip, dstIp AS dst_ip, srcPort AS src_port, dstPort AS dst_port from communi_white_list ` +
+                `protocolType AS protocol_type, detailProtocol AS protocol_detail, srcIp AS src_ip, dstIp AS dst_ip, srcPort AS src_port, dstPort AS dst_port, sanGubun from communi_white_list ` +
                 'where state= \'C\' and deploy = \'Y\';'
                 ,{
                     type: QueryTypes.SELECT
@@ -87,10 +87,12 @@ exports.scheduleInsert = () => {
                             let data = {...user.dataValues};
                             user.update({state:'E'});
 
-                            //부문으로 업데이트
-                            winston.debug(JSON.stringify(data));
-                            let tableInfo = {tableName: tableName, tableData: data};
-                            makereq.highrankPush(tableInfo);
+                            if(data.sanGubun === 1) {
+                                //부문으로 업데이트
+                                winston.debug(JSON.stringify(data));
+                                let tableInfo = {tableName: tableName, tableData: data};
+                                makereq.highrankPush(tableInfo);
+                            }
 
                             let temp = keychange.KeyChange_h005_update_communi(data);
                             communiInfos.push(temp);

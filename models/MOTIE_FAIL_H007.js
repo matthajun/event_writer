@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 
-module.exports = class KDN_AMLY_H007 extends Sequelize.Model {
+module.exports = class MOTIE_FAIL_H007 extends Sequelize.Model {
     static init(sequelize) {
         return super.init({
             message_id: {
@@ -93,27 +93,16 @@ module.exports = class KDN_AMLY_H007 extends Sequelize.Model {
                 allowNull: true,
             },
             trans_tag: {
-                type: Sequelize.STRING(10),
+                type: Sequelize.STRING(5),
                 allowNull: false,
                 defaultValue: 'C',
             },
-            trans_tag_e: {
-                type: Sequelize.STRING(30),
-                allowNull: false,
-                defaultValue: 'C',
-            },
-            trans_tag_a: {
-                type: Sequelize.STRING(30),
-                allowNull: false,
-                defaultValue: 'C',
-            }
-
         }, {
             sequelize,
             timestamps: false,
             underscored: false,
-            modelName: 'KDN_AMLY_H007',
-            tableName: 'kdn_amly_H007',
+            modelName: 'MOTIE_FAIL_H007',
+            tableName: 'motie_fail_H007',
             paranoid: true,
             charset: 'utf8',
             collate: 'utf8_unicode_ci',
