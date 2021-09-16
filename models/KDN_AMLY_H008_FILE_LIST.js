@@ -24,9 +24,24 @@ module.exports = class KDN_AMLY_H008_FILE_LIST extends Sequelize.Model {
                 type: Sequelize.STRING(100),
                 allowNull: true,
             },
+            sectValue: {
+                type: Sequelize.STRING(10),
+                allowNull: false,
+                defaultValue: 'N',
+            },
             date_time: {
                 type: Sequelize.STRING(30),
                 allowNull: true,
+            },
+            trans_tag: {
+                type: Sequelize.STRING(10),
+                allowNull: false,
+                defaultValue: 'C',
+            },
+            file_tag: {
+                type: Sequelize.STRING(10),
+                allowNull: false,
+                defaultValue: 'C',
             },
         }, {
             sequelize,

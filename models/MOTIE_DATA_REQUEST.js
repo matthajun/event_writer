@@ -68,6 +68,11 @@ module.exports = class MOTIE_DATA_REQUEST extends Sequelize.Model {
                 type: Sequelize.STRING(50),
                 allowNull: true,
             },
+            sectValue: {
+                type: Sequelize.STRING(10),
+                allowNull: false,
+                defaultValue: 'N',
+            },
         }, {
             sequelize,
             timestamps: false,

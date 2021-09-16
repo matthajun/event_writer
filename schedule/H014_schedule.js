@@ -54,7 +54,7 @@ module.exports.scheduleInsert = () => {
                                     }
                                 }
                                 else{
-                                    let error_res = {header:{message_id:'H008', keeper_id:'EWP_01_01', send_time: setDateTime.setDateTime()},
+                                    let error_res = {header:{message_id:'H014', keeper_id:'EWP_01_01', send_time: setDateTime.setDateTime()},
                                         body:{result:{res_cd: '500', res_msg: '이상행위탐지시스템 응답 없음.', contents: JSON.stringify(value.body)}}};
                                     H014.parseAndInsert(error_res);
 

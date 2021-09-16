@@ -152,10 +152,26 @@ module.exports.makeReqData_H008 = function (id, body){
     return reqData;
 };
 
-module.exports.makeReqData_H008forTest = function (id, body){
+module.exports.makeReqData_H008forTest = function (id, unit, make, start_time, end_time){
     let reqData = {};
 
-    let reqBody = body;
+    //unit_id, 제조사 make_id
+    let unit_id = 'EWP_01_UN_0'+unit;
+    let make_id = '';
+
+    if(make === 'GE') {
+        make_id = unit_id + '_' + make + '_GT';
+    }
+    else {
+        make_id = unit_id + '_' + make;
+    }
+
+    let reqBody = {
+        unit_id: unit_id ,
+        make_id: make_id,
+        start_time: start_time,
+        end_time: end_time
+    };
 
     const time = setDateTime.setDateTime();
 
@@ -285,5 +301,6 @@ module.exports.makeResData = function (err, req, seq){
 
     resData.header = reqHeaderData;
     resData.body = resBody;
+    winston.info(JSON.stringify(resData));
     return resData;
 };

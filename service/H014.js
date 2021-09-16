@@ -17,30 +17,24 @@ module.exports.parseAndInsert = async function(req){
 
     let rtnResult = {};
     try {
-
-        const result = await db.sequelize.transaction(async (t) => {
-            winston.info("*******************query start *************************");
-            for(const tableInfo of tableInfos){
-                winston.debug(JSON.stringify(tableInfo));
-                if(!Array.isArray(tableInfo.tableData)){
-                    let rslt = await db[tableInfo.tableName.toUpperCase()].create(tableInfo.tableData,{ transaction: t });
-                    //rlst =  new Error("임의 발생");
+        for(const tableInfo of tableInfos){
+            winston.debug(JSON.stringify(tableInfo));
+            if(!Array.isArray(tableInfo.tableData)){
+                let rslt = await db[tableInfo.tableName.toUpperCase()].create(tableInfo.tableData);
+                //rlst =  new Error("임의 발생");
+                if(rslt instanceof Error){
+                    throw new rslt;
+                }
+            }else{
+                for(const chileTableData of tableInfo.tableData){
+                    let rslt = await db[tableInfo.tableName.toUpperCase()].create(chileTableData);
+                    //rslt = new Error("임의 발생");
                     if(rslt instanceof Error){
                         throw new rslt;
                     }
-                }else{
-                    for(const chileTableData of tableInfo.tableData){
-                        let rslt = await db[tableInfo.tableName.toUpperCase()].create(chileTableData,{ transaction: t });
-                        //rslt = new Error("임의 발생");
-                        if(rslt instanceof Error){
-                            throw new rslt;
-                        }
-                    }
                 }
             }
-            winston.info("*******************query end *************************");
-        });
-
+        }
     } catch (error) {
         // If the execution reaches this line, an error occurred.
         // The transaction has already been rolled back automatically by Sequelize!
@@ -49,5 +43,4 @@ module.exports.parseAndInsert = async function(req){
     } finally {
         return rtnResult;
     }
-
 };

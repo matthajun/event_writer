@@ -3,6 +3,11 @@ const Sequelize = require('sequelize');
 module.exports = class KDN_AMLY_H007 extends Sequelize.Model {
     static init(sequelize) {
         return super.init({
+            anomaly_seq: {
+                type: Sequelize.INTEGER,
+                primaryKey: true,
+                autoIncrement: true,
+            },
             message_id: {
                 type: Sequelize.STRING(10),
                 allowNull: false,
@@ -19,10 +24,6 @@ module.exports = class KDN_AMLY_H007 extends Sequelize.Model {
                 type: Sequelize.STRING(20),
                 allowNull: false,
                 defaultValue: 'local',
-            },
-            anomaly_seq: {
-                type: Sequelize.STRING(30),
-                allowNull: true,
             },
             unit_id: {
                 type: Sequelize.STRING(15),
@@ -77,7 +78,7 @@ module.exports = class KDN_AMLY_H007 extends Sequelize.Model {
                 allowNull: true,
             },
             policy_name: {
-                type: Sequelize.STRING(50),
+                type: Sequelize.TEXT,
                 allowNull: true,
             },
             packet_time: {

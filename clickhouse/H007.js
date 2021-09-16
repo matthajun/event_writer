@@ -31,14 +31,17 @@ module.exports.parseAndInsert = async function(req) {
         `insert into dti.${tableName} VALUES (\'${contents}\')`
     ];
     let rtnResult = {};
+    let seq ;
     try {
-            winston.info("******************* CH query start *************************");
             for (const query of queries) {
                 let rslt = await clickhouse.query(query).toPromise();
 
                 winston.info(query);
                 if (rslt instanceof Error) {
                     throw new Error(rslt);
+                }
+                else {
+                    seq = req_body.anomaly_seq;
                 }
             }
             winston.info("******************* CH query end *************************");
@@ -47,6 +50,9 @@ module.exports.parseAndInsert = async function(req) {
         winston.error(error.stack);
         rtnResult = error;
     } finally {
-        return rtnResult;
+        if(rtnResult instanceof Error)
+            return rtnResult;
+        else
+            return seq;
     }
 };

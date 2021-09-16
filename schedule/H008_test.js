@@ -8,38 +8,37 @@ const setDateTime = require('../utils/setDateTime');
 const winston = require('../config/winston')(module);
 const _ = require('loadsh');
 
+const timer = ms => new Promise(res => setTimeout(res, ms));
+
 module.exports.scheduleInsert = () => {
-    schedule.scheduleJob("2 */2 * * * *", function() {
+    schedule.scheduleJob("31 */2 * * * *", async function() {
         const before_time = setDateTime.setDateTime_ago(2);
         const long_before_time = setDateTime.setDateTime_ago(3);
 
-        let body = {"unit_id":'EWP_01_UN_02', 'make_id': 'EWP_01_UN_02_ABB',
-            'start_time': long_before_time, 'end_time': before_time };
+        const units = process.env.HOGI_NUMBER.split(',');
+        const make = ['GE', 'ABB'];
 
-        let value = makejson.makeReqData_H008forTest('H008',body);
-        winston.debug(JSON.stringify(value));
+        for(u of units) {
+            for (m of make) {
+                let data = makejson.makeReqData_H008forTest('H008', u, m, long_before_time, before_time);
+                //winston.info(JSON.stringify(data));
 
-        httpcall.Call('post', process.env.ANOMAL_ADDRESS, value, function (err, res) {
-            winston.info("******************* ABB 요청 **********************");
+                httpcall.Call('post', process.env.ANOMAL_ADDRESS, data, async function (err, res) {
+                    if (res) {
+                        res.body.result.contents = JSON.stringify(data.body);
+                        H008.parseAndInsert(res);
+                    } else {
+                        winston.error('************************ H008 Pcap 요청의 응답이 없습니다. ************************');
+                    }
 
-            res.body.result.contents = JSON.stringify(value.body);
-            H008.parseAndInsert(res);
-        });
-
-        let body2 = {"unit_id":'EWP_01_UN_02', 'make_id': 'EWP_01_UN_02_GE_GT',
-            'start_time': long_before_time, 'end_time': before_time };
-
-        let value2 = makejson.makeReqData_H008forTest('H008',body2);
-        winston.debug(JSON.stringify(value2));
-
-        setTimeout(function(){
-            httpcall.Call('post', process.env.ANOMAL_ADDRESS, value2, function (err, res) {
-                winston.info("******************* GE 요청 **********************");
-
-                res.body.result.contents = JSON.stringify(value2.body);
-                H008.parseAndInsert(res);
-            });
-        }, 1000);
-
+                    if (err) {
+                        winston.error("****************** H008 Pcap 요청 송신 에러!**********************");
+                        console.log(err);
+                        return;
+                    }
+                });
+                await timer(500);
+            }
+        }
     })
 };

@@ -17,11 +17,13 @@ module.exports.scheduleInsert = () => {
             const result = await db.sequelize.transaction(async (t) => {
                 let tableName = process.env.DATA_REQUEST_TABLE;
 
-                let rslt = await db[tableName.toUpperCase()].findAll({where: {gubun:'MORE_P', state:'200'}})
+                let rslt = await db[tableName.toUpperCase()].findAll({where: {gubun:'MORE_P', state:'200', sectValue: 'N'}})
                     .then(async users => {
-                    if (users.length) {
-                        winston.info("******************* H008 Request is found!!! *************************");
+                        if (users.length) {
+                        winston.info("******************* H008 Request(UNIT) is found!!! *************************");
                         for (user of users) {
+                            user.update({state: '201'});
+
                             let data = {};
                             data = {...user.dataValues};
                             let value = makejson.makeReqData_H008('H008', data);
@@ -74,7 +76,7 @@ module.exports.scheduleInsert = () => {
                                 winston.debug(JSON.stringify(user.dataValues));
                                 let tableInfo = {tableName: 'motie_data_request', tableData: user.dataValues};
                                 makereq.highrankPush(tableInfo);
-                            },500)
+                            },2500)
                         }
                     }
                 });

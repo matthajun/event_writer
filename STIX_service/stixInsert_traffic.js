@@ -19,15 +19,29 @@ module.exports.searchAndInsert = async function() {
                          ['keeper_id', 'nameAgent'], ['make_id', 'vendorAgent'], ['unit_id', 'idOrganizationAgent'], ['packet_cnt', 'ppsTotal'],
                         ['inbound_cnt', 'bpsTotal'], ['packet_byte', 'inData'], ['inbound_byte', 'inPacket']], where: {trans_tag_t: 'C'}}).then(async users => {
                     if(users.length){
-                        let childInfos = [];
                         for(user of users) {
                             let data = {...user.dataValues};
                             data.flag = 'Traffic';
-                            user.update({trans_tag_t: 'E'});
-                            childInfos.push(data);
+                            if(data.nameAgent === 'EWP_01_01') {
+                                data.ipAgent = process.env.ANOMAL_ADDRESS.split('/')[2].split(':')[0];
+                                data.location = '당진화력발전소';
+                                data.original = '';
+                            }
+                            if(!data.outData)
+                                data.outData = '';
+                            if(!data.outPacket)
+                                data.outPacket = '';
+
+                            let results = {tableName: event_tableName, tableData: data};
+
+                            let rslt = await stixInsert.ParseandInsert(results);
+                            if (rslt instanceof Error){
+                                throw new rslt;
+                            }
+                            else {
+                                user.update({trans_tag_t: 'E'})
+                            }
                         }
-                        let results = {tableName: event_tableName, tableData: childInfos};
-                        await stixInsert.ParseandInsert(results);
                     }
                 });
 

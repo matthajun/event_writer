@@ -47,6 +47,8 @@ const https = require('https');
 const Transaction = require('./schedule/Transaction_schedule');
 const H007_fail = require('./service/H007_FAIL');
 
+const H008_s = require('./schedule/H008_sect_schedule');
+
 sequelize.sync({ force: false })
     .then(() => {
         winston.info('success db connect ');
@@ -91,6 +93,7 @@ app.use(passport.session());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(function (req, res, next) { // 1
+    //res.setTimeout(200);
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     res.header('Access-Control-Allow-Headers', 'content-type');
@@ -125,14 +128,12 @@ app.set('etag', false);
 H005.scheduleInsert();
 H005_connect.scheduleInsert();
 H008.scheduleInsert();
-//H008_t.scheduleInsert();
+H008_t.scheduleInsert();
 
 HighRank.searchAndtransm();
 
 initialize.Initialize(); //H004,H010 테이블 초기화
 
-stix_anomaly.searchAndInsert();
-stix_event.searchAndInsert();
 stix_state.searchAndInsert();
 stix_traffic.searchAndInsert();
 
@@ -144,5 +145,8 @@ H011.scheduleInsert();
 
 white.searchAndInsert();
 black.searchAndInsert();
-communi.searchAndInsert();
+communi.searchAndInsert(); //수집테이블->목록테이블
+
 Transaction.scheduleInsert();
+
+H008_s.scheduleInsert();

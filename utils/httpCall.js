@@ -20,7 +20,7 @@ exports.Rest = function (method, url, headers, query, callback) {
             uri: url,
             method: method.toString().toUpperCase(),
             headers: headers,
-            timeout: 30000,
+            timeout: 10000,
             strictSSL: false,
             rejectUnauthorized: false,
             followRedirect: true,
@@ -44,25 +44,27 @@ exports.Rest = function (method, url, headers, query, callback) {
         request({
             uri: url,
             method: method.toString(),
-            //headers: headers,
+            headers: headers,
             timeout: 30000,
             strictSSL: false,
             rejectUnauthorized: false,
             followRedirect: true,
-            maxRedirects: 5,
+            maxRedirects: 10,
             body: query,
             json: true
         }, function (error, response, body) {
             if (error) {
-                winston.error("POST RESPONSE ERR : ", body);
+                winston.error("POST RESPONSE ERR : ");
                 return callback("ERROR : " + error);
             } else {
                 if (url.indexOf("/restart?t=5") > 0 && url.indexOf(global.systemServiceUrl) === 0) {
                     if (response.statusCode === 204) {
-                        //winston.debug("POST RESPONSE : ", body);
+                        winston.debug("POST RESPONSE : ");
+                        console.log(204,body);
                         return callback(null, body);
                     } else {
                         winston.error("POST RESPONSE : ", response.statusCode, body);
+                        console.log(response.statusCode,'\n' ,body);
                         return callback("ERROR[" + response.statusCode + "]", null);
                     }
                 } else {
@@ -71,6 +73,7 @@ exports.Rest = function (method, url, headers, query, callback) {
                         return callback(null, body);
                     } else {
                         winston.error("POST RESPONSE : ", response.statusCode, body);
+                        console.log(response.statusCode,'\n' ,body);
                         return callback("ERROR[" + response.statusCode + "]" + " : " + body, null);
                     }
                 }
@@ -87,7 +90,7 @@ exports.Call = function (method, url, query, callback) {
     var headers = {
         //Authorization: global.esAuth,
         'Content-Type': 'application/json'
-        ,'Authorization' : auth
+        //,'Authorization' : auth
     };
     this.Rest(method, url, headers, query, function (err, data) {
         if (err) {

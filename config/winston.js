@@ -21,7 +21,7 @@ const myFormat = printf(({ level, message, label, timestamp ,stack}) => {
 
 const appendTimestamp = winston.format((info, opts) => {
     if(opts.tz)
-        info.timestamp = moment().tz(opts.tz).format('YYYY-MM-DD, HH:mm:ss');
+        info.timestamp = moment().tz(opts.tz).format('YYYY-MM-DD THH:mm:ss');
     return info;
 });
 
@@ -48,7 +48,7 @@ const logger = function (callingModule) {
                 zippedArchive: true,
                 format: combine(
                     label({ label: getLabel(callingModule)}),
-                    timestamp(),
+                    appendTimestamp({ tz: 'Asia/Seoul'}),
                     myFormat
                 )
             }),
@@ -62,7 +62,7 @@ const logger = function (callingModule) {
                 zippedArchive: true,
                 format: combine(
                     label({ label: getLabel(callingModule)}),
-                    timestamp(),
+                    appendTimestamp({ tz: 'Asia/Seoul'}),
                     myFormat
                 )
             }),
@@ -89,7 +89,7 @@ const logger = function (callingModule) {
         levels: myCustomLevels.levels,
         format: combine(
             label({ label: 'http' }),
-            timestamp(),
+            appendTimestamp({ tz: 'Asia/Seoul'}),
             myFormat,
         ),
         transports: [
@@ -102,7 +102,7 @@ const logger = function (callingModule) {
                 zippedArchive: true,
                 format: combine(
                     label({ label: 'http'}),
-                    timestamp(),
+                    appendTimestamp({ tz: 'Asia/Seoul'}),
                     myFormat
                 )
             })
@@ -122,7 +122,7 @@ const logger = function (callingModule) {
                         colorize:true,
                         format: combine(
                             label({ label: getLabel(callingModule)}),
-                            timestamp(),
+                            appendTimestamp({ tz: 'Asia/Seoul'}),
                             myFormat
                         )
                     })
@@ -140,7 +140,7 @@ const logger = function (callingModule) {
                         colorize:true,
                         format: combine(
                             label({ label: 'http'}),
-                            timestamp(),
+                            appendTimestamp({ tz: 'Asia/Seoul'}),
                             myFormat
                         )
                     })

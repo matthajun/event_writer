@@ -17,7 +17,7 @@ module.exports = class STIX_TRAFFIC extends Sequelize.Model {
                 defaultValue: 'KST'
             },
             ipAgent: {
-                type: Sequelize.STRING(10),
+                type: Sequelize.STRING(50),
                 allowNull: true,
                 defaultValue: '',
             },

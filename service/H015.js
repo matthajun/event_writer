@@ -8,6 +8,7 @@ let tablePrefix = process.env.ANOMALY_TABLE_PREFIX;
 let masterTableName = "";
 
 const CH_H015 = require('../clickhouse/H015');
+const CH_H015_sect = require('../clickhouse/H015_sect');
 
 module.exports.parseAndInsert = async function(req){
     let seq_array = [];
@@ -19,6 +20,7 @@ module.exports.parseAndInsert = async function(req){
         masterTableName = 'kdn_amly_H007';
         winston.info(JSON.stringify(req.body));
         await CH_H015.parseAndInsert(req);
+        await CH_H015_sect.parseAndInsert(req);
     }
 
     const time = setDateTime.setDateTime();
@@ -51,14 +53,7 @@ module.exports.parseAndInsert = async function(req){
                     }
                 }else{
                     for(const chileTableData of tableInfo.tableData){
-                        let rslt = await db[tableInfo.tableName.toUpperCase()].create(chileTableData,{ transaction: t });
-                        //rslt = new Error("임의 발생");
-                        if(rslt instanceof Error){
-                            throw new rslt;
-                        }
-                        else {
-                            seq_array.push(chileTableData.anomaly_seq);
-                        }
+                        seq_array.push(chileTableData.anomaly_seq);
                     }
                 }
             }

@@ -5,8 +5,16 @@ const db = require('../models');
 module.exports.ParseandInsert = async function (table) {
     let rtnResult = {};
     try {
-        for (const chileTableData of table.tableData) {
-            let rslt = await db[table.tableName.toUpperCase()].create(chileTableData);
+        if(Array.isArray(table.tableData)) {
+            for (const chileTableData of table.tableData) {
+                let rslt = await db[table.tableName.toUpperCase()].create(chileTableData);
+                if (rslt instanceof Error) {
+                    throw new rslt;
+                }
+            }
+        }
+        else {
+            let rslt = await db[table.tableName.toUpperCase()].create(table.tableData);
             if (rslt instanceof Error) {
                 throw new rslt;
             }

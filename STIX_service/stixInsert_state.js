@@ -13,33 +13,38 @@ module.exports.searchAndInsert = async function() {
 
         let rtnResult = {};
         try {
-            const result = await db.sequelize.transaction(async (t) => {
-                winston.info("************************* Query start ******************************");
+            await db.sequelize.transaction(async (t) => {
+                let rslt = await db[tableName.toUpperCase()].findAll({attributes: [['send_time', 'timeAgent'],
+                        ['keeper_id', 'nameAgent'], 'usageCPU', 'usageMemory', 'usageDisk'], where: {trans_tag_s: 'C'},
+                        transaction: t}).then(async users => {
+                            if(users.length) {
+                                winston.info("************************* STIX_STATE Query start ******************************");
+                                for(user of users) {
+                                    let data = {...user.dataValues};
 
-                let rslt = await db.sequelize.query(
-                    'SELECT \'State\' as flag, send_time as timeAgent, keeper_id as nameAgent, \'\' as idOrganizationAgent, ' +
-                '\'\' as original, usageCPU, usageMemory, usageDisk from dti.kdn_amly_H002 where trans_tag_s = \'C\''
-                    , {
-                        type: QueryTypes.SELECT
-                    }
-                ).then(async users => {
-                    if (users.length) {
-                        let results = {tableName: event_tableName, tableData: users};
+                                    data.flag = 'State';
+                                    if(data.nameAgent === 'EWP_01_01') {
+                                        data.ipAgent = process.env.ANOMAL_ADDRESS.split('/')[2].split(':')[0];
+                                        data.location = '당진화력발전소';
+                                        data.idOrganizationAgent = '';
+                                        data.original = '';
+                                    }
 
-                        await stixInsert.ParseandInsert(results);
-                        await db[tableName.toUpperCase()].update({trans_tag_s: 'E'},
-                            {
-                                where: {
-                                    trans_tag_s: 'C'
+
+                                    let results = {tableName: event_tableName, tableData: data};
+
+                                    let rslt = await stixInsert.ParseandInsert(results);
+                                    if (rslt instanceof Error){
+                                        throw new rslt;
+                                    }
+                                    else {
+                                        user.update({trans_tag_s: 'E'})
+                                    }
                                 }
-                            });
-                    }
-                });
-                if (rslt instanceof Error) {
-                    throw new rslt;
-                }
+                                winston.info("************************* STIX_STATE Query End ******************************");
+                            }
+                })
             })
-
         } catch (error) {
             // If the execution reaches this line, an error occurred.
             // The transaction has already been rolled back automatically by Sequelize!

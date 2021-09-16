@@ -3,8 +3,8 @@ const setDateTime = require('../utils/setDateTime');
 
 const {ClickHouse} = require('clickhouse');
 const clickhouse = new ClickHouse({
-    url: process.env.CH_ADDRESS,
-    port: 8124,
+    url: process.env.SECT_CH_ADDRESS,
+    port: 8125,
     debug: false,
     basicAuth: null,
     isUseGzip: false,
@@ -46,7 +46,7 @@ module.exports.parseAndInsert = async function(req) {
             }
             else {
                 let rslt = await clickhouse.query(contents).toPromise();
-                //winston.info(JSON.stringify(req_body));
+                winston.info(JSON.stringify(req_body));
 
                 if (rslt instanceof Error) {
                     throw new Error(rslt);

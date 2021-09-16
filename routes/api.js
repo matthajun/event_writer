@@ -21,6 +21,8 @@ const H015 = require('../service/H015');
 
 const CH_H007 = require('../clickhouse/H007');
 const CH_007_sect = require('../clickhouse/H007_sect');
+const CH_H015 = require('../clickhouse/H015');
+const CH_015_sect = require('../clickhouse/H015_sect');
 
 const multer = require('multer');
 const storage = multer.diskStorage({
@@ -73,8 +75,7 @@ router.post('/v1', async (req, res, next) => {
                 break;
 
             case "H007" :
-                //winston.info(JSON.stringify(req.body));
-                result = await H001.parseAndInsert(req);
+                //result = await H001.parseAndInsert(req);
                 ch_result = await CH_H007.parseAndInsert(req);
                 ch_sect_result = await CH_007_sect.parseAndInsert(req);
                 break;
@@ -98,7 +99,9 @@ router.post('/v1', async (req, res, next) => {
                 break;
 
             case 'H015' :
-                result = await H015.parseAndInsert(req);
+                //result = await H015.parseAndInsert(req);
+                ch_result = await CH_H015.parseAndInsert(req);
+                ch_sect_result = await CH_015_sect.parseAndInsert(req);
                 break;
 
             default:
@@ -116,15 +119,18 @@ router.post('/v1', async (req, res, next) => {
         }
         else{
             if (codeId === 'H015'){
-                winston.info('H015 return value : '+result);
-                res.json(makejson.makeResData(null, req, result));
+                winston.info('H015 return value : '+ch_result);
+                res.json(makejson.makeResData(null, req, ch_result));
+                winston.info('**************** 응답완료! ****************');
             }
             else if (codeId === 'H007'){
-                winston.info('H007 return value : '+result);
-                res.json(makejson.makeResData(null, req, result));
+                winston.info('H007 return value : '+ch_result);
+                res.json(makejson.makeResData(null, req, ch_result));
+                winston.info('**************** 응답완료! ****************');
             }
             else {
                 res.json(makejson.makeResData(null, req));
+                winston.info('**************** 응답완료! ****************');
             }
         }
 
@@ -144,33 +150,37 @@ router.post('/v1/:id', uploader.single('pcap_file'), async (req, res, next)=> {
 
         switch (codeId) {
             case "pcap" :
-                winston.info(req.body.json_data);
-                reqData = JSON.parse(req.body.json_data);
+                setTimeout(()=> {
+                    if (req.body.json_data) {
+                        winston.info(req.body.json_data);
+                        reqData = JSON.parse(req.body.json_data);
 
-                const reqConfirmCode = reqData.header.confirm_code;
-                const localMakeConfirmCode = await confirmutils.makeConfirmCode(reqData.body);
+                        //정합성체크
+                        const reqConfirmCode = reqData.header.confirm_code;
+                        const localMakeConfirmCode = confirmutils.makeConfirmCode(reqData.body);
 
-                if (reqConfirmCode !== localMakeConfirmCode) {
-                    winston.error(`${localMakeConfirmCode} ,  ${reqConfirmCode}`);
-                    const errCode = "93";
-                    throw Error(`{"res_cd":"${errCode}"}`);
-                }
-                //이상없으면 H009테이블로 인서트
-                winston.info('******************** H009 인서트 시작! *********************');
-                result = await H009.parseAndInsert(reqData);
-                winston.info('******************** pcap 파일'+reqData.body.file_name+'을 수신하여 저장합니다. file is downloading.********************');
+                        if (reqConfirmCode !== localMakeConfirmCode) {
+                            winston.error(`${localMakeConfirmCode} ,  ${reqConfirmCode}`);
+                            const errCode = "93";
+                            throw Error(`{"res_cd":"${errCode}"}`);
+                        }
+                        //이상없으면 H009테이블로 인서트
+                        winston.info('******************** H009 인서트 시작! *********************');
+                        result = H009.parseAndInsert(reqData);
+                    }
+                },500);
+                //H009응답
+                res.json(makejson.makeResData(null, pcap_res));
+                winston.info('************* 파일 응답완료. *************');
+
                 break;
 
             default:
                 throw Error(`{"res_cd":"99"}`)
         }
-
         if(result instanceof Error){
-            winston.info('**************** pcap 수신 에러 발생! ***************');
+            winston.info('**************** H009 인서트 에러 발생! ***************');
             throw new Error(result);
-        }else {
-            res.json(makejson.makeResData(null, pcap_res));
-            winston.info('************* 파일 응답을 보냈습니다.************   ');
         }
 
    } catch(err) {
