@@ -9,17 +9,18 @@ const H014 = require('../service/H014');
 
 const timer = ms => new Promise(res => setTimeout(res, ms));
 
-async function H014_schedule(num) {
+async function H014_schedule(num, day) {
     winston.info('************************ H014 트랜잭션 요청을 보냅니다. ************************');
-    const start_time = setDateTime.setDateTime_dayago(1);
-    const end_time = setDateTime.setDateTime_ago(0);
+    const start_time = setDateTime.setDateTime_dayago3(day);
+    const end_time = setDateTime.setDateTime_dayago2(day);
+    winston.info('**************************** 요청하는 날짜 : ' + start_time.substring(4,8));
 
     let data = makejson.makeReqData_H014_Transaction('H014', start_time, end_time);
     winston.info(JSON.stringify(data));
 
     httpcall.Call('post', process.env.ANOMAL_ADDRESS, data, async function (err, res) {
         if (res) {
-            res.body.result.contents = 'Transaction 요청';
+            res.body.result.contents = 'Transaction 임의요청 ' + JSON.stringify(data.body);
             await H014.parseAndInsert(res);
         } else {
             winston.error('************************ H014 트랜잭션 요청의 응답이 없습니다. ************************');
@@ -41,8 +42,15 @@ async function H014_schedule(num) {
     });
 }
 
+let day_ago = 15;  // x일 전 데이터를
+let day_until = 1;  // x일치 만
+let day_same = day_ago;
+
 exports.scheduleInsert = () => {
-    schedule.scheduleJob(process.env.TRANSACTION_TIME, async function() {
-        await H014_schedule(1);
+    schedule.scheduleJob(process.env.TRANSACTION_TIME_OPTION, async function() {
+        if(day_ago > day_same - day_until) {
+            await H014_schedule(1, day_ago);
+            day_ago--;
+        }
     })
 };

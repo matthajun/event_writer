@@ -215,24 +215,13 @@ module.exports.makeReqData_H014 = function (id, body, send_type){
     return reqData;
 };
 
-module.exports.makeReqData_H014_Transaction = function (id, unit, make, start_time, end_time){
+module.exports.makeReqData_H014_Transaction = function (id, start_time, end_time){
     let reqData = {};
 
     //unit_id, 제조사 make_id
-    let unit_id = 'EWP_01_UN_0'+unit;
-    let make_id = '';
-
-    if(make === 'GE') {
-        make_id = unit_id + '_' + make + '_GT';
-    }
-    else {
-        make_id = unit_id + '_' + make;
-    }
 
     let reqBody = {
         request_id: getRequest.getRequestId('H014'),
-        unit_id: unit_id ,
-        make_id: make_id,
         send_type: '2',
         start_time: start_time,
         end_time: end_time

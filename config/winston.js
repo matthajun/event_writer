@@ -44,7 +44,8 @@ const logger = function (callingModule) {
                 datePattern: 'YYYY-MM-DD',
                 dirname: logDir,
                 filename: `%DATE%.log`,
-                maxFiles: 30,  // 30일치 로그 파일 저장
+                maxFiles: '180d',  // 30일치 로그 파일 저장
+                maxSize: '100m',
                 zippedArchive: true,
                 format: combine(
                     label({ label: getLabel(callingModule)}),
@@ -58,27 +59,13 @@ const logger = function (callingModule) {
                 datePattern: 'YYYY-MM-DD',
                 dirname: logDir + '/error',  // error.log 파일은 /logs/error 하위에 저장
                 filename: `%DATE%.error.log`,
-                maxFiles: 60,
+                maxFiles: '180d',
+                maxSize: '100m',
                 zippedArchive: true,
                 format: combine(
                     label({ label: getLabel(callingModule)}),
                     appendTimestamp({ tz: 'Asia/Seoul'}),
                     myFormat
-                )
-            }),
-            new winstonDaily({
-                level: 'view',
-                datePattern: 'YYYY-MM-DD',
-                dirname: logDir + '/view',  // error.log 파일은 /logs/error 하위에 저장
-                filename: `%DATE%.view.log`,
-                maxFiles: 60,
-                zippedArchive: true,
-                json: true,
-                format: combine(
-                    appendTimestamp({ tz: 'Asia/Seoul'}),
-                    printf(info => {
-                        return `${info.timestamp} : \n ${JSON.stringify(info.message, null, 2)}`;
-                    })
                 )
             })
         ],

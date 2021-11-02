@@ -25,18 +25,33 @@ module.exports.parseAndInsert = async function(req) {
     const contents = `${req_body.message_id}`+'\',\''+`${req_body.keeper_id}`+'\',\''+`${req_body.send_time}`+'\',\''+`${req_body.anomaly_seq}`+'\',\''+`${req_body.unit_id}`
         +'\',\''+`${req_body.make_id}`+'\',\''+`${req_body.anomaly_type}`+'\',\''+`${req_body.protocol_type}`+'\',\''+`${req_body.protocol_detail}`+'\',\''+`${req_body.src_ip}`+'\',\''+`${req_body.src_mac}`
         +'\',\''+`${req_body.src_port}`+'\',\''+`${req_body.dst_ip}`+'\',\''+`${req_body.dst_mac}`+'\',\''+`${req_body.dst_port}`+'\',\''+`${req_body.payload}`+'\',\''+`${req_body.packet_code}`
-        +'\',\''+`${req_body.policy_name}`+'\',\''+`${req_body.packet_time}`+'\',\''+`${req_body.event_time}`+'\',\''+`${req_body.date_time}`;
+        +'\',\''+`${req_body.policy_name}`+'\',\''+`${req_body.packet_time}`+'\',\''+`${req_body.event_time}`+'\',\''+'';
 
-    const queries = [
+    const query =
         `insert into dti.${tableName} VALUES (\'${contents}\')`
-    ];
+    ;
+
+    const sel_query = `select anomaly_type from dti.motie_amly_H007 where anomaly_seq = '${req_body.anomaly_seq}'`;
 
     let rtnResult = {};
     try {
-        for (const query of queries) {
-            let rslt = await clickhouse.query(query).toPromise();
+        const in_seq = await clickhouse.query(sel_query).toPromise();
+
+        if (in_seq instanceof Error) {
+            throw new Error(in_seq);
         }
-        winston.info("******************* CH query end *************************");
+        else if (in_seq.length) {
+            winston.info("******************************** 같은 anomaly_seq 의 데이터가 있어, Insert 하지 않습니다. ( "+ req_body.anomaly_seq +" ) *********************************");
+        }
+        else {
+            let rslt = await clickhouse.query(query).toPromise();
+
+            //winston.info(query);
+            if (rslt instanceof Error) {
+                throw new Error(rslt);
+            }
+            winston.info("******************* CH query end (정상처리) *************************");
+        }
 
     } catch (error) {
         winston.error(error.stack);

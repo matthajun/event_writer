@@ -99,6 +99,7 @@ router.post('/v1', async (req, res, next) => {
                 break;
 
             case 'H015' :
+                winston.debug('************************ H015 here : ' + JSON.stringify(req.body.body.event_list));
                 //result = await H015.parseAndInsert(req);
                 ch_result = await CH_H015.parseAndInsert(req);
                 ch_sect_result = await CH_015_sect.parseAndInsert(req);

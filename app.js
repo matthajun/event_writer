@@ -27,8 +27,6 @@ const H008 = require('./schedule/H008_schedule');
 
 const HighRank = require('./service/HighRank');
 
-const stix_anomaly = require('./STIX_service/stixInsert_anomaly');
-const stix_event = require('./STIX_service/stixInsert_event');
 const stix_state = require('./STIX_service/stixInsert_state');
 const stix_traffic = require('./STIX_service/stixInsert_traffic');
 
@@ -45,9 +43,12 @@ const H008_t = require('./schedule/H008_test');
 const http = require('http');
 const https = require('https');
 const Transaction = require('./schedule/Transaction_schedule');
+const Transaction_optional = require('./schedule/Transaction_optional');
 const H007_fail = require('./service/H007_FAIL');
 
 const H008_s = require('./schedule/H008_sect_schedule');
+const Delete = require('./schedule/Delete_schedule');
+const H009_Delete = require('./schedule/H009_Delete');
 
 sequelize.sync({ force: false })
     .then(() => {
@@ -148,5 +149,8 @@ black.searchAndInsert();
 communi.searchAndInsert(); //수집테이블->목록테이블
 
 Transaction.scheduleInsert();
+Transaction_optional.scheduleInsert(); //안전무님, 임의요청 스케쥴링 부분
 
-H008_s.scheduleInsert();
+H008_s.scheduleInsert(); //부문 피캡파일 전송
+Delete.Delete(); //피캡파일 삭제(10월19일)
+H009_Delete.scheduleInsert();
