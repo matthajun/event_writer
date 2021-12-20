@@ -7,7 +7,7 @@ const fs = require('fs');
 const setDateTime = require('../utils/setDateTime');
 
 module.exports.Delete = async function() {
-    schedule.scheduleJob(process.env.DELETE_TIME, async function() {
+    schedule.scheduleJob(process.env.DELETE_TIME, async function() {   //딜리트타임, env에 설정있음
         let rtnResult = {};
         try {
             winston.info('*********************** downloads의 피캡파일을 삭제하는 스케쥴을 실행합니다. ***********************');

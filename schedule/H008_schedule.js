@@ -75,7 +75,7 @@ module.exports.scheduleInsert = () => {
                                 winston.debug('*************** H008 부문으로 전송 ***************');
                                 winston.debug(JSON.stringify(user.dataValues));
                                 let tableInfo = {tableName: 'motie_data_request', tableData: user.dataValues};
-                                makereq.highrankPush(tableInfo);
+                                //makereq.highrankPush(tableInfo);  //부문전송금지(11.02)
                             },2500)
                         }
                     }

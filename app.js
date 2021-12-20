@@ -129,14 +129,14 @@ app.set('etag', false);
 H005.scheduleInsert();
 H005_connect.scheduleInsert();
 H008.scheduleInsert();
-H008_t.scheduleInsert();
+//H008_t.scheduleInsert(); //피캡전송금지(11.02)
 
 HighRank.searchAndtransm();
 
 initialize.Initialize(); //H004,H010 테이블 초기화
 
-stix_state.searchAndInsert();
-stix_traffic.searchAndInsert();
+//stix_state.searchAndInsert(); //부문전송금지(11.02)
+//stix_traffic.searchAndInsert(); //부문전송금지(11.02)
 
 H013.scheduleInsert();
 H014.scheduleInsert();
@@ -149,8 +149,8 @@ black.searchAndInsert();
 communi.searchAndInsert(); //수집테이블->목록테이블
 
 Transaction.scheduleInsert();
-Transaction_optional.scheduleInsert(); //안전무님, 임의요청 스케쥴링 부분
+//Transaction_optional.scheduleInsert(); //안전무님, 임의요청 스케쥴링 부분(필요할때만 열기)
 
-H008_s.scheduleInsert(); //부문 피캡파일 전송
-Delete.Delete(); //피캡파일 삭제(10월19일)
-H009_Delete.scheduleInsert();
+//H008_s.scheduleInsert(); //부문 피캡파일 전송 //부문전송금지(11.02)
+//Delete.Delete(); //피캡파일 삭제(10월19일 추가됨) (11월9일확인 후 설정)
+//H009_Delete.scheduleInsert();  // (11월9일확인 후 설정)

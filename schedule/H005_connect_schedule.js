@@ -91,7 +91,7 @@ exports.scheduleInsert = () => {
                                 //부문으로 업데이트
                                 winston.debug(JSON.stringify(data));
                                 let tableInfo = {tableName: tableName, tableData: data};
-                                makereq.highrankPush(tableInfo);
+                                //makereq.highrankPush(tableInfo);  //부문전송금지(11.02)
                             }
 
                             let temp = keychange.KeyChange_h005_update_communi(data);

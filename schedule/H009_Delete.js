@@ -6,7 +6,7 @@ const { Op } = require("sequelize");
 const setDateTime = require('../utils/setDateTime');
 
 module.exports.scheduleInsert = () => {
-    schedule.scheduleJob('19 19 4 * * *', async function() { //삭제 스케쥴 설정(매일 04:19:19 작동)
+    schedule.scheduleJob('19 19 4 * * *', async function() {  //삭제 스케쥴 설정(매일 04:19:19 작동)
         let rtnResult = {};
         try {
             let tableName = 'kdn_amly_H009';

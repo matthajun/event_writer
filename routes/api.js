@@ -67,44 +67,31 @@ router.post('/v1', async (req, res, next) => {
             case "H004" :
                 result = await  H004_te.parseAndInsert(req);
                 break;
-
             case "H006" :
                 result = await  H001.parseAndInsert(req);
-                //res.json(makejson.makeResData(null,req));
-                //H004.ResInsert(req.body.body.policy_type);
                 break;
-
             case "H007" :
                 //result = await H001.parseAndInsert(req);
                 ch_result = await CH_H007.parseAndInsert(req);
-                ch_sect_result = await CH_007_sect.parseAndInsert(req);
+                //ch_sect_result = await CH_007_sect.parseAndInsert(req); //부문전송금지(11.02)
                 break;
-
             case "H009" :
                 result = await  H001.parseAndInsert(req);
                 break;
-
             case "H010" :
                 result = await H010_te.parseAndInsert(req);
                 break;
-
             case "H011" :
                 result = await  H011.parseAndInsert(req);
-                //res.json(makejson.makeResData(null,req));
-                //H010.ResInsert();
                 break;
-
             case 'H012' :
                 result = await H012.parseAndInsert(req);
                 break;
-
             case 'H015' :
-                winston.debug('************************ H015 here : ' + JSON.stringify(req.body.body.event_list));
-                //result = await H015.parseAndInsert(req);
+                winston.debug('********************* H015 here : ' + JSON.stringify(req.body.body.event_list));
                 ch_result = await CH_H015.parseAndInsert(req);
-                ch_sect_result = await CH_015_sect.parseAndInsert(req);
+                //ch_sect_result = await CH_015_sect.parseAndInsert(req); //부문전송금지(11.02)
                 break;
-
             default:
                 throw Error(`{"res_cd":"99"}`);
         }
