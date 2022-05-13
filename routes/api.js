@@ -51,76 +51,85 @@ router.post('/v1', async (req, res, next) => {
             throw Error(`{"res_cd":"${errCode}"}`);
         }
 
-        let result;
-        let ch_result = {};
-        let ch_sect_result = {};
-        switch (codeId) {
-            case "H001" :
-                result = await  H001.parseAndInsert(req);
-                break;
-            case "H002" :
-                result = await  H002.parseAndInsert(req);
-                break;
-            case "H003" :
-                result = await  H003.parseAndInsert(req);
-                break;
-            case "H004" :
-                result = await  H004_te.parseAndInsert(req);
-                break;
-            case "H006" :
-                result = await  H001.parseAndInsert(req);
-                break;
-            case "H007" :
-                //result = await H001.parseAndInsert(req);
-                ch_result = await CH_H007.parseAndInsert(req);
-                //ch_sect_result = await CH_007_sect.parseAndInsert(req); //부문전송금지(11.02)
-                break;
-            case "H009" :
-                result = await  H001.parseAndInsert(req);
-                break;
-            case "H010" :
-                result = await H010_te.parseAndInsert(req);
-                break;
-            case "H011" :
-                result = await  H011.parseAndInsert(req);
-                break;
-            case 'H012' :
-                result = await H012.parseAndInsert(req);
-                break;
-            case 'H015' :
-                winston.debug('********************* H015 here : ' + JSON.stringify(req.body.body.event_list));
-                ch_result = await CH_H015.parseAndInsert(req);
-                //ch_sect_result = await CH_015_sect.parseAndInsert(req); //부문전송금지(11.02)
-                break;
-            default:
-                throw Error(`{"res_cd":"99"}`);
+        //post요청 응답
+        if(codeId !== 'H007' && codeId !== 'H015') {
+            let reply = makejson.makeResData(null, req);
+            res.json(reply);
+            winston.info('**************** 응답완료! ****************');
+            console.log(reply);
         }
 
-        //Response
-        if(result instanceof Error){ //Insert가 안되었을때
-            throw new Error(result);
-        }else if(ch_result instanceof Error){
-            throw new Error(ch_result);
-        }
-        else if (ch_sect_result instanceof Error){
-            throw new Error(ch_sect_result);
-        }
-        else{
+        setTimeout(async ()=> {
+            //to DB 로직
+            let result;
+            let ch_result = {};
+            let ch_sect_result = {};
+            switch (codeId) {
+                case "H001" :
+                    result = await H001.parseAndInsert(req);
+                    break;
+                case "H002" :
+                    result = await H002.parseAndInsert(req);
+                    break;
+                case "H003" :
+                    result = await H003.parseAndInsert(req);
+                    break;
+                case "H004" :
+                    result = await H004_te.parseAndInsert(req);
+                    break;
+                case "H006" :
+                    result = await H001.parseAndInsert(req);
+                    break;
+                case "H007" :
+                    //result = await H001.parseAndInsert(req);
+                    ch_result = await CH_H007.parseAndInsert(req);
+                    //ch_sect_result = await CH_007_sect.parseAndInsert(req); //부문전송금지(11.02)
+                    break;
+                case "H009" :
+                    result = await H001.parseAndInsert(req);
+                    break;
+                case "H010" :
+                    result = await H010_te.parseAndInsert(req);
+                    break;
+                case "H011" :
+                    result = await H011.parseAndInsert(req);
+                    break;
+                case 'H012' :
+                    result = await H012.parseAndInsert(req);
+                    break;
+                case 'H015' :
+                    winston.debug('********************* H015 here : ' + JSON.stringify(req.body.body.event_list));
+                    ch_result = await CH_H015.parseAndInsert(req);
+                    //ch_sect_result = await CH_015_sect.parseAndInsert(req); //부문전송금지(11.02)
+                    break;
+                default:
+                    throw Error(`{"res_cd":"99"}`);
+            }
+
             if (codeId === 'H015'){
                 winston.info('H015 return value : '+ch_result);
-                res.json(makejson.makeResData(null, req, ch_result));
+                let reply = makejson.makeResData(null, req, ch_result);
+                res.json(reply);
                 winston.info('**************** 응답완료! ****************');
+                console.log(reply);
             }
             else if (codeId === 'H007'){
                 winston.info('H007 return value : '+ch_result);
-                res.json(makejson.makeResData(null, req, ch_result));
+                let reply = makejson.makeResData(null, req, ch_result);
+                res.json(reply);
                 winston.info('**************** 응답완료! ****************');
+                console.log(reply);
             }
-            else {
-                res.json(makejson.makeResData(null, req));
-                winston.info('**************** 응답완료! ****************');
+
+            //Eroor 핸들러
+            if (result instanceof Error) { //Insert가 안되었을때
+                throw new Error(result);
+            } else if (ch_result instanceof Error) {
+                throw new Error(ch_result);
+            } else if (ch_sect_result instanceof Error) {
+                throw new Error(ch_sect_result);
             }
-        }
+        }, 500);
 
     } catch (err) {
         next(err);

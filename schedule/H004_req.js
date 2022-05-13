@@ -11,7 +11,7 @@ async function H004_schedule(num, policy_type) {
             H004.parseAndInsert(res);
         }
         else{
-            winston.error('************************ H004 응답이 없습니다. ************************');
+            //winston.error('************************ H004 응답이 없습니다. ************************');
             if (num === 1){
                 return;
             }
@@ -21,7 +21,7 @@ async function H004_schedule(num, policy_type) {
             }
         }
         if (err) {
-            winston.error("****************** H004 송신 에러!**********************");
+            winston.info("****************** H004 송신 에러!**********************");
         }
     });
 }

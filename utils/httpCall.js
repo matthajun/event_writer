@@ -54,7 +54,7 @@ exports.Rest = function (method, url, headers, query, callback) {
             json: true
         }, function (error, response, body) {
             if (error) {
-                winston.error("POST RESPONSE ERR : ");
+                //winston.error("POST RESPONSE ERR : ");
                 return callback("ERROR : " + error);
             } else {
                 if (url.indexOf("/restart?t=5") > 0 && url.indexOf(global.systemServiceUrl) === 0) {
@@ -63,7 +63,7 @@ exports.Rest = function (method, url, headers, query, callback) {
                         console.log(204,body);
                         return callback(null, body);
                     } else {
-                        winston.error("POST RESPONSE : ", response.statusCode, body);
+                        //winston.error("POST RESPONSE : ", response.statusCode, body);
                         console.log(response.statusCode,'\n' ,body);
                         return callback("ERROR[" + response.statusCode + "]", null);
                     }
@@ -72,12 +72,11 @@ exports.Rest = function (method, url, headers, query, callback) {
                         //winston.debug("POST RESPONSE : ", body);
                         return callback(null, body);
                     } else {
-                        winston.error("POST RESPONSE : ", response.statusCode, body);
+                        //winston.error("POST RESPONSE : ", response.statusCode, body);
                         console.log(response.statusCode,'\n' ,body);
                         return callback("ERROR[" + response.statusCode + "]" + " : " + body, null);
                     }
                 }
-
             }
         });
     }
