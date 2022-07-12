@@ -59,7 +59,7 @@ module.exports.searchAndInsert = async function() {
                                 then(async users => {
                                     if(!users.length){
                                         winston.info("******************* New CommuniWhitelist is found!!! *************************");
-                                        await db[process.env.COMMUNI_LIST_TABLE.toUpperCase()].create(tableData);
+                                        await db[process.env.COMMUNI_LIST_TABLE.toUpperCase()].create(tableData); //인서트
                                     }
                                 });
 

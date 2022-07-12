@@ -13,7 +13,7 @@ async function H010_schedule(num) {
             result = await H010.parseAndInsert(res);
         }
         else {
-            winston.error('************************ H010 응답이 없습니다. ************************');
+            winston.info('************************ H010 응답이 없습니다. ************************');
             if (num === 1){
                 return;
             }

@@ -52,7 +52,7 @@ const H009_Delete = require('./schedule/H009_Delete');
 
 sequelize.sync({ force: false })
     .then(() => {
-        winston.info('success db connect ');
+        winston.info('success db connect, (version. 22.5.13)');
     })
     .catch((err) => {
         winston.error(err.stack);
@@ -133,7 +133,7 @@ H008.scheduleInsert();
 
 HighRank.searchAndtransm();
 
-initialize.Initialize(); //H004,H010 테이블 초기화
+initialize.Initialize(); // H004,H010 테이블 초기화+데이터 주기적 요청(220513확인중)
 
 //stix_state.searchAndInsert(); //부문전송금지(11.02)
 //stix_traffic.searchAndInsert(); //부문전송금지(11.02)
