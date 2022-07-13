@@ -34,6 +34,7 @@ const storage = multer.diskStorage({
     }
 });
 const uploader = multer({storage: storage});
+const history_insert = require('../clickhouse/Anomaly_history');
 
 router.post('/v1', async (req, res, next) => {
     try {
@@ -107,21 +108,25 @@ router.post('/v1', async (req, res, next) => {
             }
 
             if (codeId === 'H015'){
-                winston.info('H015 return value : '+ch_result);
+                //winston.info('H015 return value : '+ch_result);
                 let reply = makejson.makeResData(null, req, ch_result);
                 res.json(reply);
                 winston.info('**************** 응답완료! ****************');
-                console.log(reply);
+                // winston.info(JSON.stringify(req.body));
+                winston.info(JSON.stringify(reply));
+                history_insert.history_parseAndInsert(req.body,reply);
             }
             else if (codeId === 'H007'){
-                winston.info('H007 return value : '+ch_result);
+                //winston.info('H007 return value : '+ch_result);
                 let reply = makejson.makeResData(null, req, ch_result);
                 res.json(reply);
                 winston.info('**************** 응답완료! ****************');
-                console.log(reply);
+                winston.info(JSON.stringify(req.body));
+                winston.info(JSON.stringify(reply));
+                history_insert.history_parseAndInsert(req.body,reply);
             }
 
-            //Eroor 핸들러
+            //Error 핸들러
             if (result instanceof Error) { //Insert가 안되었을때
                 throw new Error(result);
             } else if (ch_result instanceof Error) {

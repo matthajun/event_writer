@@ -43,3 +43,8 @@ module.exports.setDateTime_H009 = function (mm) {
     let a = moment().subtract(mm, 'month');
     return a.format('YYYYMMDDHHmmss')
 };
+
+module.exports.setDateTimeforAnomalyHistory = function (mm) {
+    let a = moment().subtract(mm, 'month');
+    return a.format('YYYY-MM-DD HH:mm:ss')
+};
