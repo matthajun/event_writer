@@ -252,7 +252,7 @@ module.exports.makeResData = function (err, req, seq){
         reqHeaderData = {"message_id":"", "keeper_id":"EWP_01_01"};
 
     //바디 부분
-    if(!err){
+    if(!err && !(seq instanceof Error)){
         resBody = {"result":{"res_cd":"00","res_msg":"정상처리"}};
     }
     else {
@@ -266,7 +266,7 @@ module.exports.makeResData = function (err, req, seq){
                 errResult = {"res_cd":"99"};
             }
         }catch (e) {
-            winston.error(err.stack, {e});
+            //winston.error(err.stack, {e});
             errResult = {"res_cd":"99"};
         }
 
@@ -276,13 +276,29 @@ module.exports.makeResData = function (err, req, seq){
 
     reqHeaderData.send_time = time;
 
-    if(req.body.header.message_id === 'H007') {
-        resBody.receive_anomaly = seq;
+    // if(req.body.header.message_id === 'H007') {
+    //     resBody.receive_anomaly = seq;
+    // }
+    // else if(req.body.header.message_id === 'H015') {
+    //     resBody.send_type = req.body.body.send_type;
+    //     if(seq) {
+    //         resBody.receive_anomaly = seq;
+    //     }
+    // }
+
+    // 인터페이스 내부 오류 발생시 응답 킷 값에 undefined
+    if (seq instanceof Error){
+        resBody.receive_anomaly = undefined;
     }
-    else if(req.body.header.message_id === 'H015') {
-        resBody.send_type = req.body.body.send_type;
-        if(seq) {
+    else {
+        if(req.body.header.message_id === 'H007') {
             resBody.receive_anomaly = seq;
+        }
+        else if(req.body.header.message_id === 'H015') {
+            resBody.send_type = req.body.body.send_type;
+            if(seq) {
+                resBody.receive_anomaly = seq;
+            }
         }
     }
 

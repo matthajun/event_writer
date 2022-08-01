@@ -50,9 +50,11 @@ const H008_s = require('./schedule/H008_sect_schedule');
 const Delete = require('./schedule/Delete_schedule');
 const H009_Delete = require('./schedule/H009_Delete');
 
+const click_duplicate_delete = require('./schedule/Clickhouse_duplicate_delete');
+
 sequelize.sync({ force: false })
     .then(() => {
-        winston.info('success db connect, (version. 22.5.13)');
+        winston.info('success db connect, (version. 22.8.xx)');
     })
     .catch((err) => {
         winston.error(err.stack);
@@ -117,10 +119,10 @@ app.use((err, req, res, next) => {
     res.locals.error = process.env.NODE_ENV !== 'production' ? err : {};
     res.status(err.status || 500);
     winston.error(err.stack);
-    if(err.port === 8126 && err.address === (process.env.SECT_CH_ADDRESS).replace('http://','')){
-        winston.error('****************** 부문 시스템과의 연결이 끊겼습니다. ******************');
-        H007_fail.parseAndInsert(req);
-    }
+    // if(err.port === 8126 && err.address === (process.env.SECT_CH_ADDRESS).replace('http://','')){
+    //     winston.error('****************** 부문 시스템과의 연결이 끊겼습니다. ******************');
+    //     H007_fail.parseAndInsert(req);
+    // }
     res.json(makejson.makeResData(err,req))
 });
 
@@ -154,3 +156,5 @@ Transaction.scheduleInsert();
 //H008_s.scheduleInsert(); //부문 피캡파일 전송 //부문전송금지(11.02)
 //Delete.Delete(); //피캡파일 삭제(10월19일 추가됨) (11월9일확인 후 설정)
 //H009_Delete.scheduleInsert();  // (11월9일확인 후 설정)
+
+click_duplicate_delete.searchAndRun();

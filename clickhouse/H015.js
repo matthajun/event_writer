@@ -20,8 +20,23 @@ const clickhouse = new ClickHouse({
 const tableName = process.env.CH_H007;
 const timer = ms => new Promise(res => setTimeout(res, ms));
 
+function getDigit(num) {
+    num = num.toString();
+    let i=0;
+    while(num[i]) { i++; }
+    return i;
+}
+
 module.exports.parseAndInsert = async function(req) {
-    let req_header = {...req.body.header, date_time: setDateTime.setDateTime()};
+    let first_date_time = setDateTime.setDateTime() + String(Math.floor(Math.random() * 1000));
+    if(getDigit(first_date_time) === 16){
+        first_date_time += '0';
+    }
+    else if (getDigit(first_date_time) === 15) {
+        first_date_time += '00';
+    }
+
+    let req_header = {...req.body.header, date_time: first_date_time};
     let bodies = req.body.body.event_list;
     let seq_array = [];
 
@@ -36,7 +51,7 @@ module.exports.parseAndInsert = async function(req) {
             const contents = `insert into dti.${tableName} VALUES (\'`+`${req_header.message_id}` + '\',\'' + `${req_header.keeper_id}` + '\',\'' + `${req_header.send_time}` + '\',\'' + `${req_body.anomaly_seq}` + '\',\'' + `${req_body.unit_id}`
                 + '\',\'' + `${req_body.make_id}` + '\',\'' + `${req_body.anomaly_type}` + '\',\'' + `${req_body.protocol_type}` + '\',\'' + `${req_body.protocol_detail}` + '\',\'' + `${req_body.src_ip}` + '\',\'' + `${req_body.src_mac}`
                 + '\',\'' + `${req_body.src_port}` + '\',\'' + `${req_body.dst_ip}` + '\',\'' + `${req_body.dst_mac}` + '\',\'' + `${req_body.dst_port}` + '\',\'' + `${req_body.payload}` + '\',\'' + `${req_body.packet_code}`
-                + '\',\'' + `${req_body.policy_name}` + '\',\'' + `${req_body.packet_time}` + '\',\'' + `${req_body.event_time}` + '\',\'' + ''+ `\')`;
+                + '\',\'' + `${req_body.policy_name}` + '\',\'' + `${req_body.packet_time}` + '\',\'' + `${req_body.event_time}` + '\',\'' +`${req_header.date_time}`+ `\')`;
 
             winston.info('****************** '+count+' 번째 : '+JSON.stringify(req_body));
             if (in_seq instanceof Error) {

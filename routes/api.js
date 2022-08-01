@@ -56,8 +56,8 @@ router.post('/v1', async (req, res, next) => {
         if(codeId !== 'H007' && codeId !== 'H015') {
             let reply = makejson.makeResData(null, req);
             res.json(reply);
-            winston.info('**************** 응답완료! ****************');
-            console.log(reply);
+            winston.info('**************** 응답완료! 1 ****************');
+            winston.info(JSON.stringify(reply));
         }
 
         setTimeout(async ()=> {
@@ -111,19 +111,21 @@ router.post('/v1', async (req, res, next) => {
                 //winston.info('H015 return value : '+ch_result);
                 let reply = makejson.makeResData(null, req, ch_result);
                 res.json(reply);
-                winston.info('**************** 응답완료! ****************');
-                // winston.info(JSON.stringify(req.body));
-                winston.info(JSON.stringify(reply));
-                history_insert.history_parseAndInsert(req.body,reply);
+                winston.info('**************** 응답완료! 3 ****************');
+                // winston.info(`****** 수신 데이터의 키 값: ${ch_result}   `+JSON.stringify(req.body));
+                winston.info(`****** 응답 데이터의 키 값: ${ch_result}`);
+                //잠시 중단(22.7.27)
+                //history_insert.history_parseAndInsert(req.body,reply);
             }
             else if (codeId === 'H007'){
                 //winston.info('H007 return value : '+ch_result);
                 let reply = makejson.makeResData(null, req, ch_result);
                 res.json(reply);
-                winston.info('**************** 응답완료! ****************');
-                winston.info(JSON.stringify(req.body));
-                winston.info(JSON.stringify(reply));
-                history_insert.history_parseAndInsert(req.body,reply);
+                winston.info('**************** 응답완료! 2 ****************');
+                winston.info(`****** 수신 데이터의 키 값: ${ch_result}   수신 데이터: `+JSON.stringify(req.body));
+                winston.info(`****** 응답 데이터의 키 값: ${ch_result}`);
+                //잠시 중단(22.7.27)
+                //history_insert.history_parseAndInsert(req.body,reply);
             }
 
             //Error 핸들러

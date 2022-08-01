@@ -48,3 +48,14 @@ module.exports.setDateTimeforAnomalyHistory = function (mm) {
     let a = moment().subtract(mm, 'month');
     return a.format('YYYY-MM-DD HH:mm:ss')
 };
+
+// 중복 제거시 셀렉트 쿼리에 사용하는 함수! (22.07.27에 추가)
+module.exports.setDateTime_220727 = function (day, mm) {
+    let a = moment().subtract(day, 'day').subtract(mm, 'minutes');
+    return a.format('YYYYMMDDHHmmss');
+};
+
+//H007에 밀리초까지 저장하기 위해 함수 추가 (22.07.27에 추가)
+module.exports.setDateTime_milli = function () {
+    return moment().format("YYYYMMDDHHmmssSSS");
+};
