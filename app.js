@@ -54,7 +54,7 @@ const click_duplicate_delete = require('./schedule/Clickhouse_duplicate_delete')
 
 sequelize.sync({ force: false })
     .then(() => {
-        winston.info('success db connect, (version. 22.8.xx)');
+        winston.info('success db connect, (version. 22.10.5)');
     })
     .catch((err) => {
         winston.error(err.stack);

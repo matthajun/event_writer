@@ -8,6 +8,7 @@ module.exports.searchAndInsert = async function() {
     schedule.scheduleJob('35 */5 * * * *', async function () {
         let rtnResult = {};
         try {
+            winston.info("******************* 보안정책, 통신기반 테이블간 이동 시작 *************************");
             const result = await db.sequelize.transaction(async (t) => {
                 let rslt = await db[process.env.COMMUNI_TABLE.toUpperCase()].findAll({attributes: [['make_id', 'make'], ['unit_id', 'unit'],
                         ['protocol_type', 'protocolType'], ['protocol_detail', 'detailProtocol'], ['src_ip', 'srcIp'], ['src_port', 'srcPort'],
@@ -69,7 +70,7 @@ module.exports.searchAndInsert = async function() {
                     });
 
             });
-
+            winston.info("******************* 보안정책, 통신기반 테이블간 이동 끝! *************************");
         } catch (error) {
             // If the execution reaches this line, an error occurred.
             // The transaction has already been rolled back automatically by Sequelize!
