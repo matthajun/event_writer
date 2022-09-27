@@ -17,7 +17,7 @@ async function H013_schedule(num) {
             'IF(mnufcturCor = \'GE\', concat(\'EWP_01_UN_0\',assethogicode,\'_GE_GT\'), NULL)) as make_id,'+
             ' dti.motie_asset_ip.assetIp as device_ip, ' +
             'assetMacAddr as device_mac,assetNm as device_name, hostInfo as host_name from dti.motie_asset inner join ' +
-            'dti.motie_asset_ip on dti.motie_asset.assetId = dti.motie_asset_ip.assetId'
+            'dti.motie_asset_ip on dti.motie_asset.assetId = dti.motie_asset_ip.assetId where assetReal = \'Y\''
             ,{
                 type: QueryTypes.SELECT
             }

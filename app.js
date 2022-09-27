@@ -130,7 +130,7 @@ app.set('etag', false);
 
 H005.scheduleInsert();
 H005_connect.scheduleInsert();
-H008.scheduleInsert();
+H008.scheduleInsert(); // 웹상의 데이터 요청 기능
 //H008_t.scheduleInsert(); //피캡전송금지(11.02)
 
 HighRank.searchAndtransm();
@@ -158,4 +158,3 @@ Transaction.scheduleInsert();
 //H009_Delete.scheduleInsert();  // (11월9일확인 후 설정)
 
 click_duplicate_delete.searchAndRun();
-
